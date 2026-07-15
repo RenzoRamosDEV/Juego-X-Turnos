@@ -1,12 +1,8 @@
 package com.tuio.juegoxturnos.combate;
 
-import com.tuio.juegoxturnos.ia.EstrategiaCPU;
-import com.tuio.juegoxturnos.modelo.Ataque;
 import com.tuio.juegoxturnos.modelo.Personaje;
 import com.tuio.juegoxturnos.modelo.ResultadoAtaque;
 import com.tuio.juegoxturnos.modelo.efectos.EfectoAplicado;
-import com.tuio.juegoxturnos.modelo.items.Inventario;
-import com.tuio.juegoxturnos.modelo.items.Item;
 import com.tuio.juegoxturnos.ui.Colores;
 import com.tuio.juegoxturnos.ui.Consola;
 import com.tuio.juegoxturnos.util.Aleatorio;
@@ -15,80 +11,70 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Orquesta un combate por turnos entre el jugador y la CPU hasta que uno de los
- * dos se queda sin vida.
+ * Orquesta un combate por turnos entre dos {@link Combatiente combatientes}
+ * hasta que uno se queda sin vida. Cada combatiente puede estar controlado por
+ * un humano o por la CPU, de modo que el mismo motor sirve para el modo contra
+ * la máquina y para dos jugadores.
  *
- * <p>El jugador siempre abre el turno; a continuación responde la CPU. Cada
- * turno comienza procesando los efectos de estado del combatiente (veneno,
- * quemadura, aturdimiento...) y, salvo que quede aturdido, este puede atacar o
- * usar un objeto de su inventario. Al final del turno regenera algo de maná.
+ * <p>El combatiente A siempre abre el turno. Cada turno comienza levantando la
+ * defensa previa, procesando los efectos de estado (veneno, quemadura,
+ * aturdimiento...) y, salvo que quede aturdido, ejecutando su acción (atacar,
+ * defenderse o usar un objeto). Al final regenera algo de maná.
  */
 @RequiredArgsConstructor
 public final class Combate {
 
-    private final Personaje jugador;
-    private final Personaje cpu;
-    private final Inventario inventarioJugador;
-    private final Inventario inventarioCpu;
+    private final Combatiente a;
+    private final Combatiente b;
     private final Consola consola;
-    private final EstrategiaCPU ia;
     private final Aleatorio aleatorio;
 
     /**
      * Ejecuta el combate completo.
      *
-     * @return el personaje ganador
+     * @return el combatiente ganador
      */
-    public Personaje iniciar() {
-        consola.titulo(jugador.getNombre() + "  vs  " + cpu.getNombre());
+    public Combatiente iniciar() {
+        consola.titulo(a.getPersonaje().getNombre() + "  vs  " + b.getPersonaje().getNombre());
         int numeroTurno = 1;
 
-        while (jugador.estaVivo() && cpu.estaVivo()) {
+        while (a.getPersonaje().estaVivo() && b.getPersonaje().estaVivo()) {
             consola.linea();
             consola.linea(Colores.pintar("· Turno " + numeroTurno + " ·", Colores.GRIS));
-            consola.mostrarEstado(jugador, cpu);
+            consola.mostrarEstado(a.getPersonaje(), b.getPersonaje());
 
-            turnoJugador();
-            if (!jugador.estaVivo() || !cpu.estaVivo()) {
+            jugarTurno(a, b);
+            if (!a.getPersonaje().estaVivo() || !b.getPersonaje().estaVivo()) {
                 break;
             }
 
-            turnoCpu();
+            jugarTurno(b, a);
             numeroTurno++;
         }
 
         return anunciarGanador();
     }
 
-    /** Turno del jugador: procesa efectos y, si puede actuar, ejecuta su acción. */
-    private void turnoJugador() {
-        if (iniciarTurno(jugador)) {
-            AccionTurno accion = pedirAccionJugador();
-            ejecutar(jugador, cpu, inventarioJugador, accion);
-        }
-        if (jugador.estaVivo()) {
-            jugador.regenerarMana();
-        }
-    }
+    /** Turno de un combatiente: levanta la defensa previa, procesa efectos y actúa. */
+    private void jugarTurno(Combatiente actor, Combatiente objetivo) {
+        Personaje personaje = actor.getPersonaje();
+        personaje.finalizarDefensa();
 
-    /** Turno de la CPU: procesa efectos y, si puede actuar, decide y ejecuta. */
-    private void turnoCpu() {
-        if (iniciarTurno(cpu)) {
-            consola.linea();
-            AccionTurno accion = ia.decidir(cpu, jugador, inventarioCpu);
-            ejecutar(cpu, jugador, inventarioCpu, accion);
+        if (procesarEfectos(personaje)) {
+            AccionTurno accion = actor.decidirAccion(objetivo.getPersonaje());
+            ejecutar(actor, objetivo, accion);
         }
-        if (cpu.estaVivo()) {
-            cpu.regenerarMana();
+        if (personaje.estaVivo()) {
+            personaje.regenerarMana();
         }
     }
 
     /**
-     * Procesa los efectos de estado del combatiente al inicio de su turno.
+     * Procesa los efectos de estado al inicio del turno.
      *
-     * @return {@code true} si puede actuar; {@code false} si murió o quedó aturdido
+     * @return {@code true} si el personaje puede actuar; {@code false} si murió o quedó aturdido
      */
-    private boolean iniciarTurno(Personaje actor) {
+    private boolean procesarEfectos(Personaje actor) {
         List<EfectoAplicado> aplicados = actor.procesarInicioTurno();
         boolean aturdido = false;
         for (EfectoAplicado efecto : aplicados) {
@@ -112,84 +98,35 @@ public final class Combate {
         return true;
     }
 
-    /** Ejecuta la acción elegida (atacar o usar un objeto). */
-    private void ejecutar(Personaje actor, Personaje objetivo, Inventario inventario, AccionTurno accion) {
+    /** Ejecuta la acción elegida (atacar, defenderse o usar un objeto). */
+    private void ejecutar(Combatiente actor, Combatiente objetivo, AccionTurno accion) {
+        Personaje personaje = actor.getPersonaje();
         if (accion instanceof AccionTurno.Atacar atacar) {
-            ResultadoAtaque resultado = actor.atacar(atacar.ataque(), objetivo, aleatorio);
+            ResultadoAtaque resultado = personaje.atacar(atacar.ataque(), objetivo.getPersonaje(), aleatorio);
             narrarAtaque(actor, objetivo, resultado);
         } else if (accion instanceof AccionTurno.UsarObjeto usarObjeto) {
-            String mensaje = inventario.usar(usarObjeto.item(), actor);
+            String mensaje = actor.getInventario().usar(usarObjeto.item(), personaje);
             consola.narrar(Colores.pintar(mensaje, Colores.CIAN));
+        } else if (accion instanceof AccionTurno.Defender) {
+            personaje.defender();
+            consola.narrar(Colores.pintar(
+                    personaje.getNombre() + " se pone en guardia y reducirá el daño del próximo golpe.", Colores.AZUL));
         }
     }
 
-    /** Pide al jugador que elija atacar o usar un objeto, validando la opción. */
-    private AccionTurno pedirAccionJugador() {
-        List<Ataque> ataques = jugador.getAtaques();
-        boolean hayObjetos = !inventarioJugador.estaVacio();
+    /** Narra el resultado de un ataque, resaltando esquivas, críticos, especiales y efectos. */
+    private void narrarAtaque(Combatiente actor, Combatiente objetivo, ResultadoAtaque resultado) {
+        Personaje atacante = actor.getPersonaje();
+        Personaje defensor = objetivo.getPersonaje();
 
-        while (true) {
-            mostrarMenuAcciones(ataques, hayObjetos);
-            int maxOpcion = ataques.size() + (hayObjetos ? 1 : 0);
-            int opcion = consola.leerOpcion("Elige tu acción:", 1, maxOpcion);
-
-            if (opcion <= ataques.size()) {
-                Ataque elegido = ataques.get(opcion - 1);
-                if (jugador.puedeUsar(elegido)) {
-                    return new AccionTurno.Atacar(elegido);
-                }
-                consola.linea(Colores.pintar(
-                        "No tienes maná suficiente para " + elegido.getNombre() + ".", Colores.ROJO));
-            } else {
-                Item objeto = pedirObjeto();
-                if (objeto != null) {
-                    return new AccionTurno.UsarObjeto(objeto);
-                }
-            }
+        if (resultado.fallado()) {
+            consola.narrar(Colores.pintar(
+                    defensor.getNombre() + " esquiva el ataque de " + atacante.getNombre() + ".", Colores.AMARILLO));
+            return;
         }
-    }
 
-    /** Muestra el menú de objetos y devuelve el elegido, o {@code null} si se cancela. */
-    private Item pedirObjeto() {
-        List<Item> objetos = inventarioJugador.disponibles();
-        consola.linea();
-        consola.linea(Colores.pintar("Tus objetos:", Colores.NEGRITA));
-        for (int i = 0; i < objetos.size(); i++) {
-            Item objeto = objetos.get(i);
-            consola.linea(String.format("  %d) %-16s x%d  %s",
-                    i + 1, objeto.getNombre(), inventarioJugador.cantidad(objeto), objeto.getDescripcion()));
-        }
-        int opcion = consola.leerOpcion("Elige un objeto (0 = volver):", 0, objetos.size());
-        return opcion == 0 ? null : objetos.get(opcion - 1);
-    }
-
-    /** Muestra los ataques del jugador y, si tiene, la opción de usar un objeto. */
-    private void mostrarMenuAcciones(List<Ataque> ataques, boolean hayObjetos) {
-        consola.linea();
-        consola.linea(Colores.pintar("Tus acciones:", Colores.NEGRITA));
-        for (int i = 0; i < ataques.size(); i++) {
-            Ataque ataque = ataques.get(i);
-            String etiqueta = String.format("  %d) %-18s daño %2d-%2d",
-                    i + 1, ataque.getNombre(), ataque.getDanioMin(), ataque.getDanioMax());
-            if (ataque.isEspecial()) {
-                etiqueta += Colores.pintar("  [ESPECIAL, maná " + ataque.getCostoMana() + "]", Colores.MAGENTA);
-            }
-            if (!jugador.puedeUsar(ataque)) {
-                etiqueta += Colores.pintar("  (sin maná)", Colores.ROJO);
-            }
-            consola.linea(etiqueta);
-        }
-        if (hayObjetos) {
-            consola.linea(String.format("  %d) %s", ataques.size() + 1,
-                    Colores.pintar("Usar un objeto", Colores.CIAN)));
-        }
-    }
-
-    /** Narra el resultado de un ataque, resaltando críticos, especiales y efectos. */
-    private void narrarAtaque(Personaje atacante, Personaje defensor, ResultadoAtaque resultado) {
-        String color = atacante == jugador ? Colores.VERDE : Colores.ROJO;
         StringBuilder mensaje = new StringBuilder();
-        mensaje.append(Colores.pintar(atacante.getNombre(), color))
+        mensaje.append(Colores.pintar(atacante.getNombre(), actor.getColor()))
                 .append(" usa ")
                 .append(Colores.pintar(resultado.ataque().getNombre(),
                         resultado.ataque().isEspecial() ? Colores.MAGENTA : Colores.CIAN));
@@ -214,14 +151,10 @@ public final class Combate {
     }
 
     /** Muestra el estado final y devuelve al ganador. */
-    private Personaje anunciarGanador() {
-        Personaje ganador = jugador.estaVivo() ? jugador : cpu;
-        consola.mostrarEstado(jugador, cpu);
-        consola.titulo("¡" + ganador.getNombre() + " gana el combate!");
-        boolean ganaJugador = ganador == jugador;
-        consola.linea(Colores.pintar(
-                ganaJugador ? "¡Victoria! Tu estrategia funcionó." : "Derrota... ¡inténtalo de nuevo!",
-                ganaJugador ? Colores.VERDE : Colores.ROJO));
+    private Combatiente anunciarGanador() {
+        Combatiente ganador = a.getPersonaje().estaVivo() ? a : b;
+        consola.mostrarEstado(a.getPersonaje(), b.getPersonaje());
+        consola.titulo("¡" + ganador.getPersonaje().getNombre() + " gana el combate!");
         return ganador;
     }
 }
