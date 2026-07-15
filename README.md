@@ -9,7 +9,8 @@ duelos uno contra uno: contra la CPU, contra otra persona o en un torneo.
 
 - **Un jugador contra la CPU:** eliges personaje y te enfrentas a un rival
   aleatorio controlado por la máquina.
-- **Dos jugadores:** dos personas se turnan en el mismo teclado.
+- **Dos jugadores:** cada persona escribe su nombre y se turnan en el mismo
+  teclado; la cabecera indica de quién es el turno.
 - **Torneo:** con un solo personaje debes vencer en cadena al resto de rivales,
   recuperando parte de la vida entre rondas.
 
@@ -35,8 +36,9 @@ En tu turno puedes:
 - **Defender:** reduces a la mitad el daño que recibas hasta tu siguiente turno.
 - **Usar un objeto** del inventario.
 
-Antes de cada acción se muestra el **arte ASCII** de ambos combatientes con su
-barra de vida y maná justo debajo, para ver de un vistazo cómo va el duelo.
+Antes de cada acción (la de cada combatiente) se muestra de quién es el turno y
+el **arte ASCII** de ambos, con su nombre y sus barras de vida y maná apiladas
+justo debajo del personaje, para ver de un vistazo cómo va el duelo.
 
 ### Efectos de estado
 
