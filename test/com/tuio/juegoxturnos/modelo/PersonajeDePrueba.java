@@ -13,4 +13,11 @@ public class PersonajeDePrueba extends Personaje {
                              int regeneracionMana, double probabilidadCritico, List<Ataque> ataques) {
         super(nombre, vidaMaxima, manaMaximo, manaInicial, regeneracionMana, probabilidadCritico, ataques);
     }
+
+    public PersonajeDePrueba(String nombre, int vidaMaxima, int manaMaximo, int manaInicial,
+                             int regeneracionMana, double probabilidadCritico,
+                             double probabilidadEvasion, List<Ataque> ataques) {
+        super(nombre, vidaMaxima, manaMaximo, manaInicial, regeneracionMana,
+                probabilidadCritico, probabilidadEvasion, ataques);
+    }
 }
