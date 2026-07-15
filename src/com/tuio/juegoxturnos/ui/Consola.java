@@ -1,0 +1,128 @@
+package com.tuio.juegoxturnos.ui;
+
+import com.tuio.juegoxturnos.modelo.Personaje;
+import lombok.RequiredArgsConstructor;
+
+import java.io.PrintStream;
+import java.util.Scanner;
+
+/**
+ * Capa de presentación en la terminal: menús, barras de vida/maná, narración
+ * del combate y lectura de entrada del usuario.
+ *
+ * <p>Concentrar aquí toda la entrada/salida mantiene la lógica del juego libre
+ * de detalles de formato y facilita cambiar la apariencia sin tocar el modelo.
+ */
+@RequiredArgsConstructor
+public final class Consola {
+
+    private static final int ANCHO_BARRA = 20;
+
+    /** Fuente de entrada (normalmente {@code System.in}). */
+    private final Scanner entrada;
+    /** Destino de salida (normalmente {@code System.out}). */
+    private final PrintStream salida;
+    /** Milisegundos de pausa entre mensajes para dar ritmo al combate. */
+    private final long pausaMs;
+
+    public void linea(String texto) {
+        salida.println(texto);
+    }
+
+    public void linea() {
+        salida.println();
+    }
+
+    /** Escribe un mensaje y espera la pausa configurada para dar ritmo. */
+    public void narrar(String texto) {
+        salida.println(texto);
+        pausa();
+    }
+
+    public void titulo(String texto) {
+        linea();
+        linea(Colores.pintar(Colores.NEGRITA + "=== " + texto + " ===", Colores.CIAN));
+    }
+
+    public void separador() {
+        linea(Colores.pintar("--------------------------------------------------", Colores.GRIS));
+    }
+
+    /** Duerme el hilo la pausa configurada (ignora interrupciones). */
+    public void pausa() {
+        if (pausaMs <= 0) {
+            return;
+        }
+        try {
+            Thread.sleep(pausaMs);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Muestra el estado de ambos combatientes con barras de vida y maná.
+     *
+     * @param jugador personaje del jugador
+     * @param cpu     personaje de la CPU
+     */
+    public void mostrarEstado(Personaje jugador, Personaje cpu) {
+        separador();
+        linea(estadoPersonaje(jugador));
+        linea(estadoPersonaje(cpu));
+        separador();
+    }
+
+    private String estadoPersonaje(Personaje personaje) {
+        String vida = barra(personaje.getVida(), personaje.getVidaMaxima(), colorSegunVida(personaje));
+        String mana = barra(personaje.getMana(), personaje.getManaMaximo(), Colores.AZUL);
+        return String.format("%-9s  VIDA %s %3d/%-3d   MANA %s %3d/%-3d",
+                personaje.getNombre(),
+                vida, personaje.getVida(), personaje.getVidaMaxima(),
+                mana, personaje.getMana(), personaje.getManaMaximo());
+    }
+
+    /** Construye una barra ASCII coloreada del tipo {@code [■■■■■□□□□□]}. */
+    private String barra(int actual, int maximo, String color) {
+        int llenas = maximo == 0 ? 0 : (int) Math.round((double) actual / maximo * ANCHO_BARRA);
+        llenas = Math.max(0, Math.min(ANCHO_BARRA, llenas));
+        String relleno = "■".repeat(llenas) + "□".repeat(ANCHO_BARRA - llenas);
+        return "[" + Colores.pintar(relleno, color) + "]";
+    }
+
+    private String colorSegunVida(Personaje personaje) {
+        double ratio = (double) personaje.getVida() / personaje.getVidaMaxima();
+        if (ratio > 0.5) {
+            return Colores.VERDE;
+        }
+        if (ratio > 0.25) {
+            return Colores.AMARILLO;
+        }
+        return Colores.ROJO;
+    }
+
+    /**
+     * Lee un entero dentro del rango indicado, reintentando ante entradas
+     * inválidas.
+     *
+     * @param prompt texto a mostrar antes de leer
+     * @param min    valor mínimo aceptado (incluido)
+     * @param max    valor máximo aceptado (incluido)
+     * @return el entero válido introducido por el usuario
+     */
+    public int leerOpcion(String prompt, int min, int max) {
+        while (true) {
+            salida.print(prompt + " ");
+            String texto = entrada.hasNextLine() ? entrada.nextLine().trim() : "";
+            try {
+                int valor = Integer.parseInt(texto);
+                if (valor >= min && valor <= max) {
+                    return valor;
+                }
+            } catch (NumberFormatException ignorado) {
+                // Se reintenta abajo.
+            }
+            linea(Colores.pintar("Opción inválida. Escribe un número entre " + min + " y " + max + ".", Colores.ROJO));
+        }
+    }
+}
