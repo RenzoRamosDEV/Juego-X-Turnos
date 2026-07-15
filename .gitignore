@@ -1,0 +1,9 @@
+out/
+out-test/
+*.class
+.sources.txt
+.testsources.txt
+
+# IDE / herramientas
+.idea/
+.claude/
