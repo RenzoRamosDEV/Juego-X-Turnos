@@ -66,19 +66,22 @@ public final class Juego {
     }
 
     private void mostrarBienvenida() {
-        consola.titulo("JUEGO POR TURNOS");
-        consola.linea("Elige a tu personaje y vence en un duelo por turnos.");
+        consola.limpiarPantalla();
+        consola.titulo("J U E G O   x   T U R N O S");
+        consola.linea();
+        consola.linea("Vence a tu rival en un duelo por turnos.");
         consola.linea(Colores.pintar(
-                "Cada personaje tiene 3 ataques; el especial gasta maná, pega más fuerte y aplica un efecto.", Colores.GRIS));
+                "El ataque especial gasta maná, pega más fuerte y aplica un efecto.", Colores.GRIS));
         consola.linea(Colores.pintar(
-                "En tu turno puedes atacar, defenderte o usar un objeto (pociones, escudo, antídoto).", Colores.GRIS));
+                "En tu turno puedes atacar, defenderte o usar un objeto (poción, escudo, antídoto).", Colores.GRIS));
     }
 
     private int elegirModo() {
-        consola.titulo("Elige el modo de juego");
-        consola.linea("  1) Un jugador contra la CPU");
-        consola.linea("  2) Dos jugadores");
-        consola.linea("  3) Torneo (sobrevive a todos los rivales)");
+        consola.subtitulo("Elige el modo de juego");
+        consola.linea(Colores.pintar("  [1]", Colores.CIAN_CLARO + Colores.NEGRITA) + " Un jugador contra la CPU");
+        consola.linea(Colores.pintar("  [2]", Colores.CIAN_CLARO + Colores.NEGRITA) + " Dos jugadores");
+        consola.linea(Colores.pintar("  [3]", Colores.CIAN_CLARO + Colores.NEGRITA)
+                + " Torneo " + Colores.pintar("(sobrevive a todos los rivales)", Colores.GRIS));
         return consola.leerOpcion("Tu elección:", 1, 3);
     }
 
