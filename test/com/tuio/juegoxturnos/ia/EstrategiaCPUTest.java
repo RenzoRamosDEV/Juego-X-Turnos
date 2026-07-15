@@ -107,4 +107,21 @@ class EstrategiaCPUTest {
         AccionTurno accion = ia.decidir(cpu, rivalConVida(100), Inventario.porDefecto());
         assertInstanceOf(AccionTurno.Atacar.class, accion);
     }
+
+    @Test
+    @DisplayName("muy débil y sin objetos: solo ataca o se defiende (nunca usa objetos)")
+    void debilSinObjetosAtacaODefiende() {
+        EstrategiaCPU ia = new EstrategiaCPU(new Aleatorio(1));
+        boolean vistaDefensa = false;
+        for (int intento = 0; intento < 50; intento++) {
+            Personaje cpu = cpuConMana(60);
+            cpu.recibirDanio(85); // 15/100 -> muy débil
+
+            AccionTurno accion = ia.decidir(cpu, rivalConVida(100), new Inventario());
+            assertTrue(accion instanceof AccionTurno.Atacar || accion instanceof AccionTurno.Defender,
+                    "sin objetos debe atacar o defenderse");
+            vistaDefensa |= accion instanceof AccionTurno.Defender;
+        }
+        assertTrue(vistaDefensa, "la CPU debería defenderse en algún intento");
+    }
 }
