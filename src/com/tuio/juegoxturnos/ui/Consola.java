@@ -76,10 +76,19 @@ public final class Consola {
     private String estadoPersonaje(Personaje personaje) {
         String vida = barra(personaje.getVida(), personaje.getVidaMaxima(), colorSegunVida(personaje));
         String mana = barra(personaje.getMana(), personaje.getManaMaximo(), Colores.AZUL);
-        return String.format("%-9s  VIDA %s %3d/%-3d   MANA %s %3d/%-3d",
+        StringBuilder linea = new StringBuilder(String.format("%-9s  VIDA %s %3d/%-3d   MANA %s %3d/%-3d",
                 personaje.getNombre(),
                 vida, personaje.getVida(), personaje.getVidaMaxima(),
-                mana, personaje.getMana(), personaje.getManaMaximo());
+                mana, personaje.getMana(), personaje.getManaMaximo()));
+
+        if (personaje.getEscudo() > 0) {
+            linea.append(Colores.pintar("   ESC " + personaje.getEscudo(), Colores.CIAN));
+        }
+        if (personaje.tieneEfectos()) {
+            linea.append(Colores.pintar("   {" + String.join(", ", personaje.nombresEfectosActivos()) + "}",
+                    Colores.MAGENTA));
+        }
+        return linea.toString();
     }
 
     /** Construye una barra ASCII coloreada del tipo {@code [■■■■■□□□□□]}. */
