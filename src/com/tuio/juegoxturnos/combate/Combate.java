@@ -56,10 +56,10 @@ public final class Combate {
         Personaje personaje = actor.getPersonaje();
         personaje.finalizarDefensa();
 
-        consola.linea();
-        consola.linea(Colores.pintar("Turno de " + actor.getNombre(), actor.getColor() + Colores.NEGRITA));
         consola.mostrarEstado(a.getNombre(), a.getPersonaje(), a.getColor(),
                 b.getNombre(), b.getPersonaje(), b.getColor());
+        consola.linea();
+        consola.linea(Colores.pintar("  ▶ Turno de " + actor.getNombre(), actor.getColor() + Colores.NEGRITA));
 
         if (procesarEfectos(actor)) {
             AccionTurno accion = actor.decidirAccion(objetivo.getPersonaje());
