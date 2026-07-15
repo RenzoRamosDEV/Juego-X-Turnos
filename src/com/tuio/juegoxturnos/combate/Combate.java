@@ -41,7 +41,7 @@ public final class Combate {
         while (a.getPersonaje().estaVivo() && b.getPersonaje().estaVivo()) {
             consola.linea();
             consola.linea(Colores.pintar("· Turno " + numeroTurno + " ·", Colores.GRIS));
-            consola.mostrarEstado(a.getPersonaje(), b.getPersonaje());
+            consola.mostrarEstado(a.getPersonaje(), a.getColor(), b.getPersonaje(), b.getColor());
 
             jugarTurno(a, b);
             if (!a.getPersonaje().estaVivo() || !b.getPersonaje().estaVivo()) {
@@ -153,7 +153,7 @@ public final class Combate {
     /** Muestra el estado final y devuelve al ganador. */
     private Combatiente anunciarGanador() {
         Combatiente ganador = a.getPersonaje().estaVivo() ? a : b;
-        consola.mostrarEstado(a.getPersonaje(), b.getPersonaje());
+        consola.mostrarEstado(a.getPersonaje(), a.getColor(), b.getPersonaje(), b.getColor());
         consola.titulo("¡" + ganador.getPersonaje().getNombre() + " gana el combate!");
         return ganador;
     }
