@@ -1,3 +1,5 @@
+> 🚧 **Proyecto en mejora continua** — se siguen añadiendo funcionalidades y puliendo el juego.
+
 # Juego por Turnos
 
 [![CI](https://github.com/RenzoRamosDEV/Juego-X-Turnos/actions/workflows/ci.yml/badge.svg)](https://github.com/RenzoRamosDEV/Juego-X-Turnos/actions/workflows/ci.yml)
