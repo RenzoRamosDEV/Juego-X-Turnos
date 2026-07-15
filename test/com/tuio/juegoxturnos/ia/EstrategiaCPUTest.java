@@ -1,8 +1,13 @@
 package com.tuio.juegoxturnos.ia;
 
+import com.tuio.juegoxturnos.combate.AccionTurno;
 import com.tuio.juegoxturnos.modelo.Ataque;
 import com.tuio.juegoxturnos.modelo.Personaje;
 import com.tuio.juegoxturnos.modelo.PersonajeDePrueba;
+import com.tuio.juegoxturnos.modelo.efectos.Efectos;
+import com.tuio.juegoxturnos.modelo.items.Antidoto;
+import com.tuio.juegoxturnos.modelo.items.Inventario;
+import com.tuio.juegoxturnos.modelo.items.PocionVida;
 import com.tuio.juegoxturnos.util.Aleatorio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -60,5 +66,45 @@ class EstrategiaCPUTest {
             assertTrue(cpu.puedeUsar(elegido),
                     "IA eligió un ataque impagable con maná " + cpu.getMana());
         }
+    }
+
+    @Test
+    @DisplayName("se cura con una poción cuando está malherida")
+    void seCuraSiEstaMalherida() {
+        EstrategiaCPU ia = new EstrategiaCPU(new Aleatorio(1));
+        Personaje cpu = cpuConMana(60);
+        cpu.recibirDanio(80); // 20/100 -> por debajo del umbral de curación
+
+        AccionTurno accion = ia.decidir(cpu, rivalConVida(100), Inventario.porDefecto());
+
+        AccionTurno.UsarObjeto usar = assertInstanceOf(AccionTurno.UsarObjeto.class, accion);
+        assertInstanceOf(PocionVida.class, usar.item());
+    }
+
+    @Test
+    @DisplayName("usa el antídoto si está afectada y debilitada")
+    void usaAntidotoSiEstaAfectada() {
+        EstrategiaCPU ia = new EstrategiaCPU(new Aleatorio(1));
+        Personaje cpu = cpuConMana(60);
+        cpu.recibirDanio(60); // 40/100 -> debilitada pero por encima del umbral de curación
+        cpu.aplicarEfecto(Efectos.veneno());
+
+        Inventario soloAntidoto = new Inventario();
+        soloAntidoto.agregar(new Antidoto(), 1);
+
+        AccionTurno accion = ia.decidir(cpu, rivalConVida(100), soloAntidoto);
+
+        AccionTurno.UsarObjeto usar = assertInstanceOf(AccionTurno.UsarObjeto.class, accion);
+        assertInstanceOf(Antidoto.class, usar.item());
+    }
+
+    @Test
+    @DisplayName("ataca cuando está sana")
+    void atacaCuandoEstaSana() {
+        EstrategiaCPU ia = new EstrategiaCPU(new Aleatorio(1));
+        Personaje cpu = cpuConMana(60); // vida al máximo
+
+        AccionTurno accion = ia.decidir(cpu, rivalConVida(100), Inventario.porDefecto());
+        assertInstanceOf(AccionTurno.Atacar.class, accion);
     }
 }
