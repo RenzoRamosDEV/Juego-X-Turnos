@@ -4,6 +4,7 @@ import com.tuio.juegoxturnos.ia.EstrategiaCPU;
 import com.tuio.juegoxturnos.modelo.Personaje;
 import com.tuio.juegoxturnos.modelo.personajes.Arquero;
 import com.tuio.juegoxturnos.modelo.personajes.Asesino;
+import com.tuio.juegoxturnos.modelo.items.Inventario;
 import com.tuio.juegoxturnos.modelo.personajes.Guerrero;
 import com.tuio.juegoxturnos.modelo.personajes.Mago;
 import com.tuio.juegoxturnos.ui.Colores;
@@ -53,7 +54,8 @@ public final class Juego {
             consola.linea();
             consola.linea("Tu rival será: " + Colores.pintar(cpu.getNombre(), Colores.ROJO));
 
-            new Combate(jugador, cpu, consola, ia, aleatorio).iniciar();
+            new Combate(jugador, cpu, Inventario.porDefecto(), Inventario.porDefecto(),
+                    consola, ia, aleatorio).iniciar();
 
             seguirJugando = preguntarSiJugarDeNuevo();
         }
@@ -65,7 +67,9 @@ public final class Juego {
         consola.titulo("JUEGO POR TURNOS");
         consola.linea("Elige a tu personaje y derrota a la CPU en un duelo por turnos.");
         consola.linea(Colores.pintar(
-                "Cada personaje tiene 3 ataques; el especial gasta maná pero pega más fuerte.", Colores.GRIS));
+                "Cada personaje tiene 3 ataques; el especial gasta maná, pega más fuerte y aplica un efecto.", Colores.GRIS));
+        consola.linea(Colores.pintar(
+                "También dispones de objetos (pociones, escudo, antídoto) para usar en tu turno.", Colores.GRIS));
     }
 
     /** Muestra el catálogo y devuelve una instancia nueva del personaje elegido. */
