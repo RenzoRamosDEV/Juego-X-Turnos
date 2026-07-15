@@ -2,6 +2,7 @@ package com.tuio.juegoxturnos.modelo.personajes;
 
 import com.tuio.juegoxturnos.modelo.Ataque;
 import com.tuio.juegoxturnos.modelo.Personaje;
+import com.tuio.juegoxturnos.modelo.efectos.Efectos;
 
 import java.util.List;
 
@@ -9,7 +10,8 @@ import java.util.List;
  * Guerrero: especialista en ataques físicos de gran fuerza.
  *
  * <p>Es el personaje con más vida del juego. Su especial, "Corte Destructor",
- * pega muy fuerte a cambio de gastar todo su maná.
+ * pega muy fuerte a cambio de gastar maná y puede aturdir al enemigo,
+ * haciéndole perder un turno.
  */
 public final class Guerrero extends Personaje {
 
@@ -24,7 +26,7 @@ public final class Guerrero extends Personaje {
                 List.of(
                         new Ataque("Espadazo", 20, 25, 0, false),
                         new Ataque("Golpe Giratorio", 16, 22, 0, false),
-                        new Ataque("Corte Destructor", 30, 38, 50, true)
+                        new Ataque("Corte Destructor", 30, 38, 50, true, Efectos::aturdimiento, 0.5)
                 ));
     }
 }
