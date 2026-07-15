@@ -20,9 +20,10 @@ public final class Asesino extends Personaje {
     private static final int MANA_INICIAL = 60;
     private static final int REGENERACION_MANA = 25;
     private static final double PROB_CRITICO = 0.25;
+    private static final double PROB_EVASION = 0.15;
 
     public Asesino() {
-        super("Asesino", VIDA, MANA_MAXIMO, MANA_INICIAL, REGENERACION_MANA, PROB_CRITICO,
+        super("Asesino", VIDA, MANA_MAXIMO, MANA_INICIAL, REGENERACION_MANA, PROB_CRITICO, PROB_EVASION,
                 List.of(
                         new Ataque("Cuchillada", 18, 22, 0, false),
                         new Ataque("Doble Corte", 20, 26, 0, false),
