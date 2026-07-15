@@ -1,20 +1,39 @@
 # Juego por Turnos
 
-Juego de combate por turnos para la terminal. Eliges un personaje y te enfrentas
-a la CPU en un duelo uno contra uno.
+[![CI](https://github.com/RenzoRamosDEV/Juego-X-Turnos/actions/workflows/ci.yml/badge.svg)](https://github.com/RenzoRamosDEV/Juego-X-Turnos/actions/workflows/ci.yml)
+
+Juego de combate por turnos para la terminal. Eliges un personaje y luchas en
+duelos uno contra uno: contra la CPU, contra otra persona o en un torneo.
+
+## Modos de juego
+
+- **Un jugador contra la CPU:** eliges personaje y te enfrentas a un rival
+  aleatorio controlado por la máquina.
+- **Dos jugadores:** dos personas se turnan en el mismo teclado.
+- **Torneo:** con un solo personaje debes vencer en cadena al resto de rivales,
+  recuperando parte de la vida entre rondas.
 
 ## Personajes
 
-| Personaje | Vida | Crítico | Ataque especial     | Efecto del especial       |
-|-----------|------|---------|---------------------|---------------------------|
-| Guerrero  | 140  | 10 %    | Corte Destructor    | Aturdimiento (50 %)       |
-| Mago      | 100  | 10 %    | Meteorito Mágico    | Quemadura (7/turno, 3t)   |
-| Arquero   | 110  | 15 %    | Flecha Perforante   | Sangrado (6/turno, 2t)    |
-| Asesino   | 105  | 25 %    | Golpe Mortal        | Veneno (6/turno, 3t)      |
+| Personaje | Vida | Crítico | Evasión | Ataque especial   | Efecto del especial     |
+|-----------|------|---------|---------|-------------------|-------------------------|
+| Guerrero  | 140  | 10 %    | 5 %     | Corte Destructor  | Aturdimiento (50 %)     |
+| Mago      | 100  | 10 %    | 5 %     | Meteorito Mágico  | Quemadura (7/turno, 3t) |
+| Arquero   | 110  | 15 %    | 10 %    | Flecha Perforante | Sangrado (6/turno, 2t)  |
+| Asesino   | 105  | 25 %    | 15 %    | Golpe Mortal      | Veneno (6/turno, 3t)    |
 
-Cada personaje tiene 3 ataques. El daño varía de forma aleatoria en cada golpe y
-existe una probabilidad de **crítico** (x1.5). El **ataque especial** pega más
-fuerte pero gasta **maná**, que se regenera poco a poco cada turno.
+Cada personaje tiene 3 ataques. El daño varía de forma aleatoria en cada golpe,
+existe una probabilidad de **crítico** (x1.5) y el objetivo puede **esquivar**
+según su evasión. El **ataque especial** pega más fuerte pero gasta **maná**,
+que se regenera poco a poco cada turno.
+
+## Acciones por turno
+
+En tu turno puedes:
+
+- **Atacar** con uno de tus tres ataques.
+- **Defender:** reduces a la mitad el daño que recibas hasta tu siguiente turno.
+- **Usar un objeto** del inventario.
 
 ### Efectos de estado
 
@@ -60,6 +79,8 @@ Los tests usan **JUnit 5** y cubren la aleatoriedad, los ataques, el personaje
 ./test.sh
 ```
 
+Cada push ejecuta la misma batería en **GitHub Actions** (ver `.github/workflows/ci.yml`).
+
 ## Dependencias
 
 - **Lombok** (`@Getter`, `@RequiredArgsConstructor`) para eliminar getters y
@@ -75,9 +96,13 @@ Lombok para que reconozca los getters generados.
 src/com/tuio/juegoxturnos/
 ├── Main.java                 # Punto de entrada
 ├── combate/
-│   ├── Juego.java            # Menú, selección de personaje y bucle de partidas
-│   ├── Combate.java          # Motor de un combate por turnos
-│   └── AccionTurno.java      # Acción de turno: atacar o usar un objeto
+│   ├── Juego.java            # Modos de juego, selección de personaje y bucle
+│   ├── Combate.java          # Motor de un combate por turnos (simétrico)
+│   ├── Combatiente.java      # Un contendiente: personaje + inventario + control
+│   ├── Controlador.java      # Quién decide la acción (humano o CPU)
+│   ├── ControladorHumano.java# Pide la acción por consola
+│   ├── ControladorCpu.java   # Delega en la EstrategiaCPU
+│   └── AccionTurno.java      # Acción de turno: atacar, defender o usar objeto
 ├── ia/
 │   └── EstrategiaCPU.java    # Decisiones de la CPU
 ├── modelo/
@@ -109,6 +134,6 @@ lib/                          # Dependencias (Lombok, JUnit 5)
 
 ## Ideas para próximas versiones
 
-- Modo 2 jugadores en el mismo teclado.
-- Sistema de niveles / experiencia y modo torneo.
-- Más objetos y efectos (aturdimiento por objeto, robo de vida, etc.).
+- Sistema de niveles / experiencia entre combates.
+- Más objetos y efectos (robo de vida, buff de daño, etc.).
+- Migrar el proyecto a Maven o Gradle.
