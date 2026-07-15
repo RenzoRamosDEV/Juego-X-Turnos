@@ -61,21 +61,22 @@ public final class Consola {
     }
 
     /**
-     * Muestra el estado de ambos combatientes: el arte ASCII de cada uno con su
-     * barra de vida y maná justo debajo.
+     * Muestra el estado de ambos combatientes: para cada uno, su arte ASCII y,
+     * debajo, su nombre, su barra de vida y su barra de maná.
      *
-     * @param uno       primer combatiente
-     * @param colorUno  color con el que se pinta su arte
-     * @param dos       segundo combatiente
-     * @param colorDos  color con el que se pinta su arte
+     * @param nombreUno nombre visible del primer combatiente
+     * @param uno       personaje del primer combatiente
+     * @param colorUno  color con el que se pinta
+     * @param nombreDos nombre visible del segundo combatiente
+     * @param dos       personaje del segundo combatiente
+     * @param colorDos  color con el que se pinta
      */
-    public void mostrarEstado(Personaje uno, String colorUno, Personaje dos, String colorDos) {
+    public void mostrarEstado(String nombreUno, Personaje uno, String colorUno,
+                              String nombreDos, Personaje dos, String colorDos) {
         separador();
-        mostrarArte(uno, colorUno);
-        linea(estadoPersonaje(uno));
+        mostrarCombatiente(nombreUno, uno, colorUno);
         linea();
-        mostrarArte(dos, colorDos);
-        linea(estadoPersonaje(dos));
+        mostrarCombatiente(nombreDos, dos, colorDos);
         separador();
     }
 
@@ -86,25 +87,28 @@ public final class Consola {
         }
     }
 
-    private String estadoPersonaje(Personaje personaje) {
-        String vida = barra(personaje.getVida(), personaje.getVidaMaxima(), colorSegunVida(personaje));
-        String mana = barra(personaje.getMana(), personaje.getManaMaximo(), Colores.AZUL);
-        StringBuilder linea = new StringBuilder(String.format("%-9s  VIDA %s %3d/%-3d   MANA %s %3d/%-3d",
-                personaje.getNombre(),
-                vida, personaje.getVida(), personaje.getVidaMaxima(),
-                mana, personaje.getMana(), personaje.getManaMaximo()));
+    /** Muestra el arte del combatiente y, debajo, su nombre, vida y maná. */
+    private void mostrarCombatiente(String nombre, Personaje personaje, String color) {
+        mostrarArte(personaje, color);
+        linea(Colores.pintar(nombre, color + Colores.NEGRITA));
+        linea(String.format("  VIDA %s %3d/%-3d",
+                barra(personaje.getVida(), personaje.getVidaMaxima(), colorSegunVida(personaje)),
+                personaje.getVida(), personaje.getVidaMaxima()));
 
+        StringBuilder mana = new StringBuilder(String.format("  MANA %s %3d/%-3d",
+                barra(personaje.getMana(), personaje.getManaMaximo(), Colores.AZUL),
+                personaje.getMana(), personaje.getManaMaximo()));
         if (personaje.getEscudo() > 0) {
-            linea.append(Colores.pintar("   ESC " + personaje.getEscudo(), Colores.CIAN));
+            mana.append(Colores.pintar("   ESC " + personaje.getEscudo(), Colores.CIAN));
         }
         if (personaje.isDefendiendo()) {
-            linea.append(Colores.pintar("   DEF", Colores.AZUL));
+            mana.append(Colores.pintar("   DEF", Colores.AZUL));
         }
         if (personaje.tieneEfectos()) {
-            linea.append(Colores.pintar("   {" + String.join(", ", personaje.nombresEfectosActivos()) + "}",
+            mana.append(Colores.pintar("   {" + String.join(", ", personaje.nombresEfectosActivos()) + "}",
                     Colores.MAGENTA));
         }
-        return linea.toString();
+        linea(mana.toString());
     }
 
     /** Construye una barra ASCII coloreada del tipo {@code [■■■■■□□□□□]}. */
@@ -135,6 +139,26 @@ public final class Consola {
      * @param max    valor máximo aceptado (incluido)
      * @return el entero válido introducido por el usuario
      */
+    /**
+     * Lee una línea de texto no vacía.
+     *
+     * @param prompt texto a mostrar antes de leer
+     * @return el texto introducido, sin espacios sobrantes
+     */
+    public String leerTexto(String prompt) {
+        while (true) {
+            salida.print(prompt + " ");
+            if (!entrada.hasNextLine()) {
+                throw new IllegalStateException("Se agotó la entrada mientras se esperaba un texto");
+            }
+            String texto = entrada.nextLine().trim();
+            if (!texto.isEmpty()) {
+                return texto;
+            }
+            linea(Colores.pintar("El texto no puede estar vacío.", Colores.ROJO));
+        }
+    }
+
     public int leerOpcion(String prompt, int min, int max) {
         while (true) {
             salida.print(prompt + " ");
