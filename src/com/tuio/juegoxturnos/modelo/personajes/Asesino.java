@@ -2,6 +2,7 @@ package com.tuio.juegoxturnos.modelo.personajes;
 
 import com.tuio.juegoxturnos.modelo.Ataque;
 import com.tuio.juegoxturnos.modelo.Personaje;
+import com.tuio.juegoxturnos.modelo.efectos.Efectos;
 
 import java.util.List;
 
@@ -9,8 +10,8 @@ import java.util.List;
  * Asesino: especialista en ataques críticos y velocidad.
  *
  * <p>Tiene poca vida, pero la probabilidad de crítico más alta del juego, lo
- * que convierte cualquier golpe (y sobre todo su especial "Golpe Mortal") en
- * una amenaza constante.
+ * que convierte cualquier golpe en una amenaza constante. Su especial "Golpe
+ * Mortal" envenena al enemigo, dañándolo durante varios turnos.
  */
 public final class Asesino extends Personaje {
 
@@ -25,7 +26,7 @@ public final class Asesino extends Personaje {
                 List.of(
                         new Ataque("Cuchillada", 18, 22, 0, false),
                         new Ataque("Doble Corte", 20, 26, 0, false),
-                        new Ataque("Golpe Mortal", 30, 37, 50, true)
+                        new Ataque("Golpe Mortal", 30, 37, 50, true, Efectos::veneno, 1.0)
                 ));
     }
 }
