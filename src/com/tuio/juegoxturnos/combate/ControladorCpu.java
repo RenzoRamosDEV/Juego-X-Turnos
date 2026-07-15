@@ -14,7 +14,7 @@ public final class ControladorCpu implements Controlador {
     private final EstrategiaCPU estrategia;
 
     @Override
-    public AccionTurno decidir(Personaje actor, Personaje rival, Inventario inventario) {
+    public AccionTurno decidir(String nombreActor, Personaje actor, Personaje rival, Inventario inventario) {
         return estrategia.decidir(actor, rival, inventario);
     }
 }
