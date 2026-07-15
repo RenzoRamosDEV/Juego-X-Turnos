@@ -20,6 +20,7 @@ import java.util.List;
  * <ul>
  *   <li>Si está malherida y tiene una poción, se cura.</li>
  *   <li>Si está debilitada, arrastra efectos de estado y tiene un antídoto, lo usa.</li>
+ *   <li>Si está muy débil y sin poción, a veces se defiende.</li>
  *   <li>Si el especial está disponible y el rival está débil, remata con él.</li>
  *   <li>Si el especial está disponible, lo usa la mayoría de las veces por su
  *       alto daño.</li>
@@ -41,6 +42,12 @@ public final class EstrategiaCPU {
 
     /** Umbral de vida propia (en %) por debajo del cual usa el antídoto si está afectada. */
     private static final double UMBRAL_ANTIDOTO = 0.50;
+
+    /** Umbral de vida propia (en %) por debajo del cual la CPU puede defenderse. */
+    private static final double UMBRAL_DEFENSA = 0.25;
+
+    /** Probabilidad de defenderse cuando está muy débil y sin poción. */
+    private static final double PROB_DEFENDER = 0.35;
 
     private final Aleatorio aleatorio;
 
@@ -66,6 +73,9 @@ public final class EstrategiaCPU {
             if (antidoto != null) {
                 return new AccionTurno.UsarObjeto(antidoto);
             }
+        }
+        if (vidaRatio <= UMBRAL_DEFENSA && aleatorio.ocurre(PROB_DEFENDER)) {
+            return new AccionTurno.Defender();
         }
 
         return new AccionTurno.Atacar(elegirAtaque(cpu, rival));
