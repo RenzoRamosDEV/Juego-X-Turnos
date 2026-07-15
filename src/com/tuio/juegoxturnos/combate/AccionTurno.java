@@ -16,4 +16,8 @@ public sealed interface AccionTurno {
     /** Consumir un objeto del inventario. */
     record UsarObjeto(Item item) implements AccionTurno {
     }
+
+    /** Defenderse: reduce el daño recibido hasta el próximo turno propio. */
+    record Defender() implements AccionTurno {
+    }
 }
