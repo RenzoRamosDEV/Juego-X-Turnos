@@ -20,9 +20,10 @@ public final class Mago extends Personaje {
     private static final int MANA_INICIAL = 60;
     private static final int REGENERACION_MANA = 25;
     private static final double PROB_CRITICO = 0.10;
+    private static final double PROB_EVASION = 0.05;
 
     public Mago() {
-        super("Mago", VIDA, MANA_MAXIMO, MANA_INICIAL, REGENERACION_MANA, PROB_CRITICO,
+        super("Mago", VIDA, MANA_MAXIMO, MANA_INICIAL, REGENERACION_MANA, PROB_CRITICO, PROB_EVASION,
                 List.of(
                         new Ataque("Bola de Fuego", 18, 24, 0, false),
                         new Ataque("Rayo Arcano", 22, 28, 0, false),
