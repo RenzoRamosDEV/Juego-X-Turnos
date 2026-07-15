@@ -20,7 +20,7 @@ public final class ControladorHumano implements Controlador {
     private final Consola consola;
 
     @Override
-    public AccionTurno decidir(Personaje actor, Personaje rival, Inventario inventario) {
+    public AccionTurno decidir(String nombreActor, Personaje actor, Personaje rival, Inventario inventario) {
         List<Ataque> ataques = actor.getAtaques();
         boolean hayObjetos = !inventario.estaVacio();
         int opcionDefender = ataques.size() + 1;
@@ -28,8 +28,8 @@ public final class ControladorHumano implements Controlador {
         int maxOpcion = hayObjetos ? opcionObjetos : opcionDefender;
 
         while (true) {
-            mostrarMenu(actor, ataques, hayObjetos, opcionDefender, opcionObjetos);
-            int opcion = consola.leerOpcion("Elige la acción de " + actor.getNombre() + ":", 1, maxOpcion);
+            mostrarMenu(nombreActor, ataques, actor, hayObjetos, opcionDefender, opcionObjetos);
+            int opcion = consola.leerOpcion("Elige la acción de " + nombreActor + ":", 1, maxOpcion);
 
             if (opcion <= ataques.size()) {
                 Ataque elegido = ataques.get(opcion - 1);
@@ -49,10 +49,10 @@ public final class ControladorHumano implements Controlador {
         }
     }
 
-    private void mostrarMenu(Personaje actor, List<Ataque> ataques, boolean hayObjetos,
+    private void mostrarMenu(String nombreActor, List<Ataque> ataques, Personaje actor, boolean hayObjetos,
                              int opcionDefender, int opcionObjetos) {
         consola.linea();
-        consola.linea(Colores.pintar("Acciones de " + actor.getNombre() + ":", Colores.NEGRITA));
+        consola.linea(Colores.pintar("Acciones de " + nombreActor + ":", Colores.NEGRITA));
         for (int i = 0; i < ataques.size(); i++) {
             Ataque ataque = ataques.get(i);
             String etiqueta = String.format("  %d) %-18s daño %2d-%2d",
