@@ -2,6 +2,7 @@ package com.tuio.juegoxturnos.modelo.personajes;
 
 import com.tuio.juegoxturnos.modelo.Ataque;
 import com.tuio.juegoxturnos.modelo.Personaje;
+import com.tuio.juegoxturnos.modelo.efectos.Efectos;
 
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  *
  * <p>Ofrece el daño más constante del juego y una probabilidad de crítico algo
  * superior a la media. Su especial "Flecha Perforante" atraviesa la armadura
- * enemiga.
+ * enemiga y provoca un sangrado que sigue dañando durante dos turnos.
  */
 public final class Arquero extends Personaje {
 
@@ -25,7 +26,7 @@ public final class Arquero extends Personaje {
                 List.of(
                         new Ataque("Flecha Precisa", 18, 23, 0, false),
                         new Ataque("Triple Disparo", 20, 26, 0, false),
-                        new Ataque("Flecha Perforante", 28, 35, 50, true)
+                        new Ataque("Flecha Perforante", 28, 35, 50, true, Efectos::sangrado, 1.0)
                 ));
     }
 }
