@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arquitectura · Juego x Turnos</title>
+<meta name="description" content="Cómo está montado el juego: capas, paquetes, patrones de diseño y el flujo de un turno.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand">⚔ Juego <span class="x">x</span> Turnos</span>
+    <span class="spacer"></span>
+    <div class="links">
+      <a class="link" href="index.html">Inicio</a>
+      <a class="link" href="tecnologias.html">Tecnologías</a>
+      <a class="link active" href="arquitectura.html">Arquitectura</a>
+      <a class="link" href="personajes.html">Personajes</a>
+      <a class="link" href="como-jugar.html">Cómo jugar</a>
+      <a class="link" href="ejecutar.html">Ejecutar</a>
+    </div>
+  </div>
+</nav>
+
+<div class="subhero">
+  <div class="wrap">
+    <div class="kicker">02 · Arquitectura</div>
+    <h1>Cómo está montado</h1>
+    <p>La idea de fondo es simple: <b>separar responsabilidades</b>. El modelo (las reglas) no sabe nada de la consola, y la interfaz no sabe nada de las reglas. Así se puede cambiar el aspecto sin tocar la lógica, y probar la lógica sin necesidad de la interfaz.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Estructura de paquetes</h2>
+<pre class="code tree">src/com/tuio/juegoxturnos/
+├── <b>Main.java</b>              <span class="m"># arranque: crea dependencias y lanza el juego</span>
+├── <b>combate/</b>               <span class="m"># orquestación del combate</span>
+│   ├── Juego                <span class="m"># modos de juego y menús</span>
+│   ├── Combate              <span class="m"># motor por turnos (simétrico)</span>
+│   ├── Combatiente          <span class="m"># personaje + inventario + control + nombre</span>
+│   ├── Controlador          <span class="m"># interfaz: quién decide el turno</span>
+│   ├── ControladorHumano    <span class="m"># pide la acción por consola</span>
+│   ├── ControladorCpu       <span class="m"># delega en la IA</span>
+│   └── AccionTurno          <span class="m"># sealed: Atacar | Defender | UsarObjeto</span>
+├── <b>ia/</b>
+│   └── EstrategiaCPU        <span class="m"># decisiones de la máquina</span>
+├── <b>modelo/</b>               <span class="m"># las reglas del juego (sin I/O)</span>
+│   ├── Personaje, Ataque, ResultadoAtaque
+│   ├── personajes/          <span class="m"># Guerrero, Mago, Arquero, Asesino</span>
+│   ├── efectos/             <span class="m"># EfectoEstado, DanioPorTurno, Aturdimiento…</span>
+│   └── items/               <span class="m"># Item, PocionVida, Escudo, Antidoto, Inventario</span>
+├── <b>ui/</b>
+│   ├── Consola              <span class="m"># marcos, barras, menús, narración</span>
+│   ├── ArteAscii            <span class="m"># dibujo de cada personaje</span>
+│   └── Colores              <span class="m"># paleta ANSI</span>
+└── <b>util/</b>
+    └── Aleatorio            <span class="m"># aleatoriedad centralizada (con semilla)</span></pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Las capas</h2>
+    <div class="grid cols-2">
+      <div class="card"><h3>modelo</h3><p>El corazón del juego: personajes, ataques, efectos de estado e ítems. No imprime nada ni lee teclado; solo aplica reglas. Muchos objetos son inmutables (<code>Ataque</code>, <code>ResultadoAtaque</code>).</p></div>
+      <div class="card"><h3>combate</h3><p>Orquesta el duelo. <code>Combate</code> lleva el turno de cada bando; <code>Juego</code> gestiona los modos y menús; <code>AccionTurno</code> representa lo que se hace en un turno.</p></div>
+      <div class="card"><h3>ia</h3><p><code>EstrategiaCPU</code> decide: curarse si está malherida, usar antídoto si está envenenada, defenderse si peligra o atacar (rematando con el especial cuando conviene).</p></div>
+      <div class="card"><h3>ui</h3><p>Todo el dibujo vive aquí: <code>Consola</code> pinta marcos, barras y el registro de sucesos; <code>ArteAscii</code> guarda los dibujos; <code>Colores</code> centraliza la paleta.</p></div>
+      <div class="card"><h3>util</h3><p><code>Aleatorio</code> encapsula el azar. Se puede fijar una semilla para partidas reproducibles y para los tests.</p></div>
+      <div class="card"><h3>Main</h3><p>Solo cablea las piezas (consola, aleatoriedad) y arranca <code>Juego</code>. Sin lógica de juego.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Patrones y decisiones</h2>
+    <ul class="clean">
+      <li><b>Estrategia (Controlador):</b> el motor de combate no distingue humano de CPU. Cada bando tiene un <code>Controlador</code> que decide su turno. Por eso el mismo motor sirve para 1 jugador, 2 jugadores y torneo.</li>
+      <li><b>Tipos sellados (sealed):</b> <code>AccionTurno</code> solo puede ser <em>Atacar</em>, <em>Defender</em> o <em>UsarObjeto</em>. El compilador ayuda a no olvidar ningún caso.</li>
+      <li><b>Inmutabilidad:</b> los resultados y los ataques son <code>record</code> sin estado mutable; menos errores y más fáciles de razonar.</li>
+      <li><b>Fábricas:</b> los efectos (<code>Efectos.veneno()</code>), el inventario (<code>Inventario.porDefecto()</code>) y los personajes (vía <code>Supplier</code>) se crean en un único sitio, fácil de ajustar para el balance.</li>
+      <li><b>Aleatoriedad inyectada:</b> nadie crea su propio <code>Random</code>; todos reciben el mismo <code>Aleatorio</code>. Eso hace el juego testeable.</li>
+      <li><b>Separación de I/O:</b> la lógica devuelve datos (p. ej. <code>ResultadoAtaque</code>) y la <code>Consola</code> los narra. La lógica no imprime.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> El flujo de un turno</h2>
+    <p class="lead">Cada turno de un combatiente sigue estos pasos:</p>
+<pre class="code"><span class="m">1.</span> Se dibuja el escenario (ambos personajes, vida, maná y sucesos).
+<span class="m">2.</span> Se levanta la defensa del turno anterior.
+<span class="m">3.</span> Se procesan los efectos de estado (veneno/quemadura/sangrado hacen daño).
+   <span class="m">→ si el efecto lo mata, termina el combate.</span>
+   <span class="m">→ si está aturdido, pierde el turno.</span>
+<span class="m">4.</span> El Controlador decide la acción: Atacar, Defender o UsarObjeto.
+<span class="m">5.</span> Se ejecuta y se narra el resultado (daño, crítico, esquiva, efecto…).
+<span class="m">6.</span> El combatiente regenera algo de maná.</pre>
+    <div class="note">Al <b>atacar</b>, primero se comprueba si el objetivo <b>esquiva</b>; si no, se calcula el daño (con posible <b>crítico</b> ×1.5), se aplica sobre el escudo y la vida, y —si el ataque lo lleva— se intenta aplicar su <b>efecto de estado</b>.</div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="pager">
+    <a href="tecnologias.html"><small>&larr; Anterior</small>Tecnologías</a>
+    <a class="next" href="personajes.html"><small>Siguiente &rarr;</small>Personajes</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap"><p>Hecho con Java · <a href="https://github.com/RenzoRamosDEV/Juego-X-Turnos" target="_blank" rel="noopener">RenzoRamosDEV/Juego-X-Turnos</a></p></div>
+</footer>
+
+</body>
+</html>

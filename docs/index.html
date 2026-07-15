@@ -4,127 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Juego x Turnos — Combate en la terminal</title>
-<meta name="description" content="Juego de combate por turnos para la terminal, escrito en Java. Aprende cómo está montado, qué usa y cómo jugar.">
-<style>
-  :root{
-    --bg:#0d1117; --surface:#161b22; --surface2:#1c2129; --border:#30363d;
-    --text:#e6edf3; --muted:#9198a1; --accent:#58a6ff;
-    --guerrero:#f0883e; --mago:#a371f7; --arquero:#3fb950; --asesino:#f85149;
-    --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{
-    background:var(--bg);color:var(--text);line-height:1.6;
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
-  a{color:var(--accent);text-decoration:none}
-  a:hover{text-decoration:underline}
-  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
-  code,pre,.mono{font-family:var(--mono)}
-
-  /* NAV */
-  nav{
-    position:sticky;top:0;z-index:10;background:rgba(13,17,23,.85);
-    backdrop-filter:blur(8px);border-bottom:1px solid var(--border);
-  }
-  nav .wrap{display:flex;align-items:center;gap:18px;height:56px;flex-wrap:wrap}
-  nav .brand{font-weight:700;color:var(--text);letter-spacing:.5px}
-  nav a.link{color:var(--muted);font-size:.9rem}
-  nav a.link:hover{color:var(--text);text-decoration:none}
-  nav .spacer{flex:1}
-
-  /* HERO */
-  header.hero{padding:70px 0 50px;text-align:center;border-bottom:1px solid var(--border)}
-  .hero h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.1;letter-spacing:1px}
-  .hero h1 .x{color:var(--accent)}
-  .hero p.sub{color:var(--muted);font-size:1.15rem;margin-top:14px}
-  .art-hero{
-    font-family:var(--mono);color:var(--accent);white-space:pre;display:inline-block;
-    text-align:left;margin:26px 0 4px;font-size:.8rem;line-height:1.2;overflow-x:auto;max-width:100%;
-  }
-  .btns{margin-top:26px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-  .btn{
-    display:inline-block;padding:11px 20px;border-radius:9px;font-weight:600;font-size:.95rem;
-    border:1px solid var(--border);background:var(--surface);color:var(--text);
-  }
-  .btn.primary{background:var(--accent);border-color:var(--accent);color:#05121f}
-  .btn:hover{text-decoration:none;transform:translateY(-1px)}
-  .btn{transition:transform .1s ease}
-
-  /* SECTIONS */
-  section{padding:56px 0;border-bottom:1px solid var(--border)}
-  section h2{font-size:1.7rem;margin-bottom:6px;display:flex;align-items:center;gap:10px}
-  section h2 .em{color:var(--accent)}
-  section .lead{color:var(--muted);margin-bottom:26px;max-width:70ch}
-
-  .grid{display:grid;gap:16px}
-  .cols-2{grid-template-columns:repeat(2,1fr)}
-  .cols-3{grid-template-columns:repeat(3,1fr)}
-  @media(max-width:720px){.cols-2,.cols-3{grid-template-columns:1fr}}
-
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
-  .card h3{font-size:1.1rem;margin-bottom:8px}
-  .card p{color:var(--muted);font-size:.95rem}
-  .card .tag{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-
-  /* CHIPS */
-  .chips{display:flex;flex-wrap:wrap;gap:10px}
-  .chip{
-    background:var(--surface);border:1px solid var(--border);border-radius:999px;
-    padding:8px 16px;font-size:.9rem;display:flex;align-items:center;gap:8px;
-  }
-  .chip b{color:var(--text)}
-  .chip span{color:var(--muted)}
-  .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
-
-  /* CODE */
-  pre.code{
-    background:var(--surface);border:1px solid var(--border);border-radius:12px;
-    padding:18px;overflow-x:auto;font-size:.88rem;line-height:1.55;color:#c9d1d9;
-  }
-  pre.code .c{color:#7ee787}   /* comentario/comando */
-  pre.code .m{color:var(--muted)}
-  .tree{color:var(--muted)}
-  .tree b{color:var(--text)}
-
-  /* PERSONAJES */
-  .fighter{position:relative;overflow:hidden}
-  .fighter::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--c)}
-  .fighter .art{
-    font-family:var(--mono);white-space:pre;color:var(--c);font-size:.82rem;line-height:1.15;
-    margin-bottom:12px;
-  }
-  .fighter h3{color:var(--c)}
-  .stats{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-  .stat{font-size:.78rem;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 9px;color:var(--muted)}
-  .stat b{color:var(--text)}
-  .fighter .special{font-size:.9rem;margin-top:6px}
-  .fighter .special b{color:var(--c)}
-
-  /* LISTA */
-  ul.clean{list-style:none;display:grid;gap:10px}
-  ul.clean li{padding-left:26px;position:relative;color:var(--muted)}
-  ul.clean li::before{content:"▸";position:absolute;left:4px;color:var(--accent)}
-  ul.clean li b{color:var(--text)}
-
-  footer{padding:40px 0 60px;text-align:center;color:var(--muted);font-size:.9rem}
-  footer .mono{color:var(--muted)}
-</style>
+<meta name="description" content="Juego de combate por turnos para la terminal, escrito en Java. Cómo está montado, qué usa y cómo jugar.">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <nav>
   <div class="wrap">
-    <span class="brand">⚔ Juego <span style="color:var(--accent)">x</span> Turnos</span>
+    <span class="brand">⚔ Juego <span class="x">x</span> Turnos</span>
     <span class="spacer"></span>
-    <a class="link" href="#que-es">Qué es</a>
-    <a class="link" href="#tecnologias">Tecnologías</a>
-    <a class="link" href="#arquitectura">Cómo está montado</a>
-    <a class="link" href="#personajes">Personajes</a>
-    <a class="link" href="#jugar">Cómo jugar</a>
-    <a class="link" href="#ejecutar">Ejecutar</a>
+    <div class="links">
+      <a class="link active" href="index.html">Inicio</a>
+      <a class="link" href="tecnologias.html">Tecnologías</a>
+      <a class="link" href="arquitectura.html">Arquitectura</a>
+      <a class="link" href="personajes.html">Personajes</a>
+      <a class="link" href="como-jugar.html">Cómo jugar</a>
+      <a class="link" href="ejecutar.html">Ejecutar</a>
+    </div>
   </div>
 </nav>
 
@@ -140,188 +36,27 @@
    /   \        |__|      /____\       /|__|\
   Guerrero    Asesino      Mago        Arquero</pre>
     <div class="btns">
-      <a class="btn primary" href="#ejecutar">▶ Cómo jugar</a>
+      <a class="btn primary" href="como-jugar.html">▶ Cómo jugar</a>
       <a class="btn" href="https://github.com/RenzoRamosDEV/Juego-X-Turnos" target="_blank" rel="noopener">Ver en GitHub</a>
     </div>
   </div>
 </header>
 
-<section id="que-es">
+<section>
   <div class="wrap">
     <h2><span class="em">#</span> ¿Qué es?</h2>
-    <p class="lead">Eliges un personaje y luchas en duelos uno contra uno. Cada personaje tiene 3 ataques, un especial poderoso y un estilo propio. El azar del daño, los críticos, las esquivas y los efectos hacen que cada combate sea distinto: gana quien mejor gestione su turno.</p>
-    <div class="grid cols-3">
-      <div class="card"><span class="tag">Modos</span><h3>3 formas de jugar</h3><p>Contra la CPU, dos jugadores en el mismo teclado o un torneo por rondas.</p></div>
-      <div class="card"><span class="tag">Táctica</span><h3>Decisiones por turno</h3><p>Atacar, defender o usar un objeto. El maná limita el especial.</p></div>
-      <div class="card"><span class="tag">Estilo</span><h3>Terminal con arte ASCII</h3><p>Paneles, barras de vida y maná y colores. Todo dentro de la consola.</p></div>
-    </div>
-  </div>
-</section>
+    <p class="lead">Eliges un personaje y luchas en duelos uno contra uno. Cada personaje tiene 3 ataques, un especial poderoso y un estilo propio. El azar del daño, los críticos, las esquivas y los efectos de estado hacen que cada combate sea distinto: gana quien mejor gestione su turno, no quien tenga el personaje "más fuerte".</p>
 
-<section id="tecnologias">
-  <div class="wrap">
-    <h2><span class="em">#</span> ¿Qué usamos?</h2>
-    <p class="lead">Un proyecto Java sencillo, sin gestor de dependencias: se compila con <code>javac</code> y las librerías van como <code>.jar</code> en <code>lib/</code>.</p>
-    <div class="chips">
-      <div class="chip"><span class="dot" style="background:#f89820"></span><b>Java 17</b><span>lenguaje</span></div>
-      <div class="chip"><span class="dot" style="background:#e34c26"></span><b>Lombok</b><span>menos código repetido</span></div>
-      <div class="chip"><span class="dot" style="background:#25a162"></span><b>JUnit 5</b><span>60 tests</span></div>
-      <div class="chip"><span class="dot" style="background:#2088ff"></span><b>GitHub Actions</b><span>CI en cada push</span></div>
-      <div class="chip"><span class="dot" style="background:#8957e5"></span><b>ANSI</b><span>colores en la terminal</span></div>
-    </div>
-    <div class="grid cols-2" style="margin-top:20px">
-      <div class="card"><h3>Lombok</h3><p><code>@Getter</code> y <code>@RequiredArgsConstructor</code> eliminan getters y constructores repetitivos del modelo.</p></div>
-      <div class="card"><h3>JUnit 5</h3><p>Pruebas de daño, críticos, maná, efectos, ítems, IA y balance. La aleatoriedad usa semilla fija para ser reproducible.</p></div>
-      <div class="card"><h3>GitHub Actions</h3><p>Cada push compila y ejecuta toda la batería de tests automáticamente.</p></div>
-      <div class="card"><h3>Sin build tool</h3><p>Solo hace falta el JDK 17. Los scripts <code>run.sh</code> y <code>test.sh</code> compilan y lanzan todo.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="arquitectura">
-  <div class="wrap">
-    <h2><span class="em">#</span> Cómo está montado</h2>
-    <p class="lead">El código está separado por responsabilidades: el <b>modelo</b> no sabe nada de la consola, y la <b>interfaz</b> no sabe nada de las reglas. Así se puede cambiar el aspecto sin tocar la lógica y probar la lógica sin la interfaz.</p>
+    <h2 style="margin-top:36px"><span class="em">#</span> Explora el proyecto</h2>
+    <p class="lead">Cada apartado tiene su propia página con todo el detalle.</p>
     <div class="grid cols-2">
-      <div>
-<pre class="code tree">src/com/tuio/juegoxturnos/
-├── <b>Main.java</b>          <span class="m"># arranque</span>
-├── <b>combate/</b>           <span class="m"># flujo del combate</span>
-│   ├── Juego            <span class="m"># modos y menús</span>
-│   ├── Combate          <span class="m"># motor por turnos</span>
-│   ├── Combatiente      <span class="m"># personaje + control</span>
-│   ├── Controlador      <span class="m"># humano o CPU</span>
-│   └── AccionTurno      <span class="m"># atacar/defender/objeto</span>
-├── <b>ia/</b>                <span class="m"># EstrategiaCPU</span>
-├── <b>modelo/</b>            <span class="m"># reglas del juego</span>
-│   ├── Personaje, Ataque
-│   ├── efectos/         <span class="m"># veneno, quemadura…</span>
-│   └── items/           <span class="m"># poción, escudo…</span>
-├── <b>ui/</b>                <span class="m"># Consola, Colores, ArteAscii</span>
-└── <b>util/</b>              <span class="m"># Aleatorio (con semilla)</span></pre>
-      </div>
-      <div class="grid" style="gap:14px">
-        <div class="card"><h3>Modelo</h3><p>Personajes, ataques, efectos de estado e ítems. Objetos inmutables donde tiene sentido (<code>Ataque</code>, resultados).</p></div>
-        <div class="card"><h3>Combate + IA</h3><p>Un motor simétrico controla el turno de cada bando mediante un <b>Controlador</b> (humano o CPU). La CPU usa una estrategia sencilla.</p></div>
-        <div class="card"><h3>Interfaz (ui)</h3><p>Todo el dibujo —marcos, barras, arte ASCII y colores— vive aquí. El resto del juego solo le pide "muestra esto".</p></div>
-      </div>
+      <div class="card link-card"><a href="tecnologias.html"><span class="tag">01</span><h3>Tecnologías &rarr;</h3><p>Java 17, Lombok, JUnit 5 y GitHub Actions. Sin gestor de dependencias.</p></a></div>
+      <div class="card link-card"><a href="arquitectura.html"><span class="tag">02</span><h3>Arquitectura &rarr;</h3><p>Cómo está organizado el código en capas y qué patrones usa.</p></a></div>
+      <div class="card link-card"><a href="personajes.html"><span class="tag">03</span><h3>Personajes &rarr;</h3><p>Los 4 luchadores, sus ataques, stats y estilo de juego.</p></a></div>
+      <div class="card link-card"><a href="como-jugar.html"><span class="tag">04</span><h3>Cómo jugar &rarr;</h3><p>Modos, acciones por turno, efectos, objetos y estrategia.</p></a></div>
+      <div class="card link-card"><a href="ejecutar.html"><span class="tag">05</span><h3>Ejecutar &rarr;</h3><p>Cómo compilar, jugar y correr los tests en tu máquina.</p></a></div>
+      <div class="card link-card"><a href="https://github.com/RenzoRamosDEV/Juego-X-Turnos" target="_blank" rel="noopener"><span class="tag">Repo</span><h3>GitHub &rarr;</h3><p>Código fuente, historial de commits y CI.</p></a></div>
     </div>
-  </div>
-</section>
-
-<section id="personajes">
-  <div class="wrap">
-    <h2><span class="em">#</span> Personajes</h2>
-    <p class="lead">Cuatro clases equilibradas: ninguna es superior, cada una destaca en algo. El especial gasta maná, pega más fuerte y aplica un efecto.</p>
-    <div class="grid cols-2">
-
-      <div class="card fighter" style="--c:var(--guerrero)">
-        <div class="art">   ___
-  |o o|
-  |_H_|
- /|   |\
-  |___|
-  /   \</div>
-        <h3>Guerrero</h3>
-        <div class="stats"><span class="stat">Vida <b>140</b></span><span class="stat">Crítico <b>10%</b></span><span class="stat">Evasión <b>5%</b></span></div>
-        <p class="special"><b>Corte Destructor</b> — el que más aguanta; su especial puede <b>aturdir</b> (hacer perder el turno).</p>
-      </div>
-
-      <div class="card fighter" style="--c:var(--mago)">
-        <div class="art">    /\
-   /  \
-  /_oo_\
-   |  |
-   |--|
-  /____\</div>
-        <h3>Mago</h3>
-        <div class="stats"><span class="stat">Vida <b>100</b></span><span class="stat">Crítico <b>10%</b></span><span class="stat">Evasión <b>5%</b></span></div>
-        <p class="special"><b>Meteorito Mágico</b> — el mayor daño del juego y una <b>quemadura</b> que daña varios turnos.</p>
-      </div>
-
-      <div class="card fighter" style="--c:var(--arquero)">
-        <div class="art">   ___
-  |o o|
-  |_-_|)
-  /|  |)
-   |  |)
-  /|__|\</div>
-        <h3>Arquero</h3>
-        <div class="stats"><span class="stat">Vida <b>110</b></span><span class="stat">Crítico <b>15%</b></span><span class="stat">Evasión <b>10%</b></span></div>
-        <p class="special"><b>Flecha Perforante</b> — daño constante y un <b>sangrado</b> que sigue haciendo daño.</p>
-      </div>
-
-      <div class="card fighter" style="--c:var(--asesino)">
-        <div class="art">   ___
-  /^^^\
- |x   x|
-  \_v_/
-  /|  |\
-   |__|</div>
-        <h3>Asesino</h3>
-        <div class="stats"><span class="stat">Vida <b>105</b></span><span class="stat">Crítico <b>25%</b></span><span class="stat">Evasión <b>15%</b></span></div>
-        <p class="special"><b>Golpe Mortal</b> — el que más esquiva y hace críticos; envenena al enemigo.</p>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<section id="jugar">
-  <div class="wrap">
-    <h2><span class="em">#</span> Cómo jugar</h2>
-    <p class="lead">Al arrancar eliges un modo y un personaje. Después, en tu turno, decides tu acción escribiendo un número y pulsando Enter.</p>
-
-    <h3 style="margin:8px 0 14px">Modos</h3>
-    <div class="grid cols-3">
-      <div class="card"><span class="tag">1 jugador</span><h3>Contra la CPU</h3><p>Te enfrentas a un rival aleatorio controlado por la máquina.</p></div>
-      <div class="card"><span class="tag">2 jugadores</span><h3>Local</h3><p>Cada persona escribe su nombre y os turnáis en el mismo teclado.</p></div>
-      <div class="card"><span class="tag">Reto</span><h3>Torneo</h3><p>Vence en cadena al resto de personajes, recuperando algo de vida entre rondas.</p></div>
-    </div>
-
-    <h3 style="margin:28px 0 14px">En tu turno puedes…</h3>
-    <ul class="clean">
-      <li><b>Atacar</b> — elige uno de tus 3 ataques. El daño varía un poco cada vez y puede ser crítico (×1.5).</li>
-      <li><b>Defender</b> — reduces a la mitad el daño que recibas hasta tu siguiente turno.</li>
-      <li><b>Usar un objeto</b> — del inventario, en lugar de atacar.</li>
-    </ul>
-
-    <div class="grid cols-2" style="margin-top:24px">
-      <div class="card">
-        <h3>Efectos de estado</h3>
-        <ul class="clean" style="margin-top:10px">
-          <li><b>Veneno / Quemadura / Sangrado</b> — daño al inicio de cada turno.</li>
-          <li><b>Aturdimiento</b> — el enemigo pierde su siguiente turno.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Objetos</h3>
-        <ul class="clean" style="margin-top:10px">
-          <li><b>Poción de Vida</b> (x2) — restaura 35 de vida.</li>
-          <li><b>Escudo</b> (x1) — absorbe 30 puntos de daño.</li>
-          <li><b>Antídoto</b> (x1) — elimina los efectos de estado.</li>
-        </ul>
-      </div>
-    </div>
-    <p class="lead" style="margin-top:20px">Antes de cada acción se muestra a ambos combatientes con su arte, su vida y su maná, para ver de un vistazo cómo va el duelo.</p>
-  </div>
-</section>
-
-<section id="ejecutar">
-  <div class="wrap">
-    <h2><span class="em">#</span> Cómo ejecutarlo</h2>
-    <p class="lead">Necesitas <b>JDK 17</b> o superior. Clona el repositorio y lanza el script:</p>
-<pre class="code"><span class="c"># Compilar y jugar</span>
-./run.sh
-
-<span class="c"># O a mano:</span>
-find src -name "*.java" &gt; sources.txt
-javac -cp lib/lombok.jar -d out @sources.txt
-java -cp out com.tuio.juegoxturnos.Main
-
-<span class="c"># Ejecutar los tests</span>
-./test.sh</pre>
-    <p class="lead" style="margin-top:18px">El juego es interactivo y usa colores, así que córrelo en tu terminal (no en una tubería).</p>
   </div>
 </section>
 

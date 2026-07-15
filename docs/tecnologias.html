@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tecnologías · Juego x Turnos</title>
+<meta name="description" content="Qué usa el proyecto: Java 17, Lombok, JUnit 5, GitHub Actions y por qué, con ejemplos.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand">⚔ Juego <span class="x">x</span> Turnos</span>
+    <span class="spacer"></span>
+    <div class="links">
+      <a class="link" href="index.html">Inicio</a>
+      <a class="link active" href="tecnologias.html">Tecnologías</a>
+      <a class="link" href="arquitectura.html">Arquitectura</a>
+      <a class="link" href="personajes.html">Personajes</a>
+      <a class="link" href="como-jugar.html">Cómo jugar</a>
+      <a class="link" href="ejecutar.html">Ejecutar</a>
+    </div>
+  </div>
+</nav>
+
+<div class="subhero">
+  <div class="wrap">
+    <div class="kicker">01 · Tecnologías</div>
+    <h1>¿Qué usamos?</h1>
+    <p>Un proyecto Java deliberadamente <b>sencillo</b>: sin Maven ni Gradle. Se compila con <code>javac</code> y las librerías viajan como <code>.jar</code> dentro de la carpeta <code>lib/</code>. Solo hace falta el JDK 17 para compilar, jugar y probar.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="chips">
+      <div class="chip"><span class="dot" style="background:#f89820"></span><b>Java 17</b><span>lenguaje</span></div>
+      <div class="chip"><span class="dot" style="background:#e34c26"></span><b>Lombok</b><span>menos boilerplate</span></div>
+      <div class="chip"><span class="dot" style="background:#25a162"></span><b>JUnit 5</b><span>60 tests</span></div>
+      <div class="chip"><span class="dot" style="background:#2088ff"></span><b>GitHub Actions</b><span>integración continua</span></div>
+      <div class="chip"><span class="dot" style="background:#8957e5"></span><b>ANSI</b><span>colores en consola</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Java 17</h2>
+    <p class="lead">Es la base LTS. Aprovechamos varias comodidades modernas del lenguaje que hacen el código más corto y seguro:</p>
+    <ul class="clean">
+      <li><b>records</b> para datos inmutables como <code>ResultadoAtaque</code> o <code>EfectoAplicado</code>.</li>
+      <li><b>sealed interface</b> en <code>AccionTurno</code>: la acción del turno solo puede ser <em>Atacar</em>, <em>Defender</em> o <em>UsarObjeto</em>.</li>
+      <li><b>switch</b> con flechas y <b>pattern matching</b> de <code>instanceof</code> para ejecutar cada acción.</li>
+      <li><b>var</b> y <code>List.of(...)</code> para escribir menos.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Lombok</h2>
+    <p class="lead">Genera en tiempo de compilación los getters y constructores repetitivos, para que el modelo se centre en las reglas y no en el "código de fontanería".</p>
+    <div class="grid cols-2">
+      <div>
+        <h3>Sin Lombok</h3>
+<pre class="code"><span class="k">public final class</span> Ataque {
+    <span class="k">private final</span> String nombre;
+    <span class="k">private final</span> <span class="k">int</span> danioMin;
+    <span class="k">private final</span> <span class="k">int</span> danioMax;
+
+    <span class="k">public</span> String getNombre(){ <span class="k">return</span> nombre; }
+    <span class="k">public int</span> getDanioMin(){ <span class="k">return</span> danioMin; }
+    <span class="k">public int</span> getDanioMax(){ <span class="k">return</span> danioMax; }
+    <span class="m">// ... un getter por cada campo</span>
+}</pre>
+      </div>
+      <div>
+        <h3>Con Lombok</h3>
+<pre class="code"><span class="s">@Getter</span>
+<span class="k">public final class</span> Ataque {
+    <span class="k">private final</span> String nombre;
+    <span class="k">private final</span> <span class="k">int</span> danioMin;
+    <span class="k">private final</span> <span class="k">int</span> danioMax;
+
+    <span class="m">// los getters los genera Lombok</span>
+}</pre>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:14px">También usamos <code>@RequiredArgsConstructor</code> para inyectar dependencias (consola, aleatoriedad, controladores) sin escribir el constructor a mano.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> JUnit 5</h2>
+    <p class="lead">La lógica del juego está cubierta por <b>60 pruebas</b>: daño dentro de rango, críticos, maná, efectos de estado, ítems, decisiones de la IA y balance de los personajes. La clave es que la aleatoriedad se puede fijar con una <b>semilla</b>, así los tests son reproducibles.</p>
+<pre class="code"><span class="s">@Test</span>
+<span class="s">@DisplayName</span>(<span class="s">"un golpe crítico multiplica el daño por 1.5"</span>)
+<span class="k">void</span> ataqueConCritico() {
+    Personaje atacante = nuevoPersonaje(<span class="s">100</span>, <span class="s">60</span>, <span class="s">1.0</span>); <span class="m">// crítico garantizado</span>
+    Personaje objetivo = nuevoPersonaje(<span class="s">100</span>, <span class="s">60</span>, <span class="s">0.0</span>);
+
+    ResultadoAtaque r = atacante.atacar(BASICO, objetivo, <span class="k">new</span> Aleatorio(<span class="s">1</span>));
+
+    assertTrue(r.critico());
+    assertEquals(<span class="s">15</span>, r.danio());      <span class="m">// round(10 * 1.5)</span>
+    assertEquals(<span class="s">85</span>, objetivo.getVida());
+}</pre>
+    <div class="note"><b>Reproducible:</b> <code>new Aleatorio(1)</code> siempre da la misma secuencia, así que un test que pasa hoy pasa siempre. Para eso <code>Aleatorio</code> tiene un constructor con semilla.</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> GitHub Actions (CI)</h2>
+    <p class="lead">Cada vez que se sube código, GitHub compila el proyecto y ejecuta toda la batería de tests automáticamente. Si algo se rompe, salta el aviso.</p>
+<pre class="code"><span class="m">name: CI</span>
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: <span class="s">"17"</span>
+      - name: Ejecutar la batería de tests
+        run: ./test.sh</pre>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="pager">
+    <a href="index.html"><small>&larr; Anterior</small>Inicio</a>
+    <a class="next" href="arquitectura.html"><small>Siguiente &rarr;</small>Arquitectura</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap"><p>Hecho con Java · <a href="https://github.com/RenzoRamosDEV/Juego-X-Turnos" target="_blank" rel="noopener">RenzoRamosDEV/Juego-X-Turnos</a></p></div>
+</footer>
+
+</body>
+</html>

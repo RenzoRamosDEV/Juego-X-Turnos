@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personajes · Juego x Turnos</title>
+<meta name="description" content="Los 4 personajes del juego: ataques, estadísticas, ataque especial y estilo de juego.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand">⚔ Juego <span class="x">x</span> Turnos</span>
+    <span class="spacer"></span>
+    <div class="links">
+      <a class="link" href="index.html">Inicio</a>
+      <a class="link" href="tecnologias.html">Tecnologías</a>
+      <a class="link" href="arquitectura.html">Arquitectura</a>
+      <a class="link active" href="personajes.html">Personajes</a>
+      <a class="link" href="como-jugar.html">Cómo jugar</a>
+      <a class="link" href="ejecutar.html">Ejecutar</a>
+    </div>
+  </div>
+</nav>
+
+<div class="subhero">
+  <div class="wrap">
+    <div class="kicker">03 · Personajes</div>
+    <h1>Los cuatro luchadores</h1>
+    <p>Están equilibrados a propósito: <b>ninguno es superior</b>, cada uno destaca en algo. Todos tienen 3 ataques. El daño varía un poco en cada golpe y el <b>ataque especial</b> gasta 50 de maná, pega más fuerte y aplica un efecto de estado.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="grid cols-2">
+
+      <div class="card fighter" style="--c:var(--guerrero)">
+        <div class="art">   ___
+  |o o|
+  |_H_|
+ /|   |\
+  |___|
+  /   \</div>
+        <h3>Guerrero</h3>
+        <p class="muted">El más resistente. Aguanta el castigo y golpea fuerte; su especial puede dejar al rival sin turno.</p>
+        <div class="stats"><span class="stat">Vida <b>140</b></span><span class="stat">Crítico <b>10%</b></span><span class="stat">Evasión <b>5%</b></span></div>
+        <ul class="moves">
+          <li><span>Espadazo</span><span class="dmg">20–25</span></li>
+          <li><span>Golpe Giratorio</span><span class="dmg">16–22</span></li>
+          <li><span class="esp">★ Corte Destructor</span><span class="dmg">30–38 · maná 50</span></li>
+        </ul>
+        <p class="muted" style="font-size:.9rem">Especial: <b style="color:var(--guerrero)">Aturdimiento</b> (50% de probabilidad) — el enemigo pierde su siguiente turno.</p>
+      </div>
+
+      <div class="card fighter" style="--c:var(--mago)">
+        <div class="art">    /\
+   /  \
+  /_oo_\
+   |  |
+   |--|
+  /____\</div>
+        <h3>Mago</h3>
+        <p class="muted">Poca vida, pero el mayor daño potencial del juego. Frágil y letal: hay que elegir bien cuándo lanzar el especial.</p>
+        <div class="stats"><span class="stat">Vida <b>100</b></span><span class="stat">Crítico <b>10%</b></span><span class="stat">Evasión <b>5%</b></span></div>
+        <ul class="moves">
+          <li><span>Bola de Fuego</span><span class="dmg">18–24</span></li>
+          <li><span>Rayo Arcano</span><span class="dmg">22–28</span></li>
+          <li><span class="esp">★ Meteorito Mágico</span><span class="dmg">32–40 · maná 50</span></li>
+        </ul>
+        <p class="muted" style="font-size:.9rem">Especial: <b style="color:var(--mago)">Quemadura</b> — 7 de daño por turno durante 3 turnos.</p>
+      </div>
+
+      <div class="card fighter" style="--c:var(--arquero)">
+        <div class="art">   ___
+  |o o|
+  |_-_|)
+  /|  |)
+   |  |)
+  /|__|\</div>
+        <h3>Arquero</h3>
+        <p class="muted">Daño constante y buena puntería. Menos altibajos que el resto: fiable turno tras turno.</p>
+        <div class="stats"><span class="stat">Vida <b>110</b></span><span class="stat">Crítico <b>15%</b></span><span class="stat">Evasión <b>10%</b></span></div>
+        <ul class="moves">
+          <li><span>Flecha Precisa</span><span class="dmg">18–23</span></li>
+          <li><span>Triple Disparo</span><span class="dmg">20–26</span></li>
+          <li><span class="esp">★ Flecha Perforante</span><span class="dmg">28–35 · maná 50</span></li>
+        </ul>
+        <p class="muted" style="font-size:.9rem">Especial: <b style="color:var(--arquero)">Sangrado</b> — 6 de daño por turno durante 2 turnos.</p>
+      </div>
+
+      <div class="card fighter" style="--c:var(--asesino)">
+        <div class="art">   ___
+  /^^^\
+ |x   x|
+  \_v_/
+  /|  |\
+   |__|</div>
+        <h3>Asesino</h3>
+        <p class="muted">El más rápido y escurridizo: máxima probabilidad de crítico y de esquiva. Poco aguante, pero castiga sin descanso.</p>
+        <div class="stats"><span class="stat">Vida <b>105</b></span><span class="stat">Crítico <b>25%</b></span><span class="stat">Evasión <b>15%</b></span></div>
+        <ul class="moves">
+          <li><span>Cuchillada</span><span class="dmg">18–22</span></li>
+          <li><span>Doble Corte</span><span class="dmg">20–26</span></li>
+          <li><span class="esp">★ Golpe Mortal</span><span class="dmg">30–37 · maná 50</span></li>
+        </ul>
+        <p class="muted" style="font-size:.9rem">Especial: <b style="color:var(--asesino)">Veneno</b> — 6 de daño por turno durante 3 turnos.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Comparativa</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Personaje</th><th>Vida</th><th>Crítico</th><th>Evasión</th><th>Especial</th><th>Efecto</th></tr></thead>
+        <tbody>
+          <tr><td><b style="color:var(--guerrero)">Guerrero</b></td><td>140</td><td>10%</td><td>5%</td><td>Corte Destructor</td><td>Aturdimiento (50%)</td></tr>
+          <tr><td><b style="color:var(--mago)">Mago</b></td><td>100</td><td>10%</td><td>5%</td><td>Meteorito Mágico</td><td>Quemadura 7×3</td></tr>
+          <tr><td><b style="color:var(--arquero)">Arquero</b></td><td>110</td><td>15%</td><td>10%</td><td>Flecha Perforante</td><td>Sangrado 6×2</td></tr>
+          <tr><td><b style="color:var(--asesino)">Asesino</b></td><td>105</td><td>25%</td><td>15%</td><td>Golpe Mortal</td><td>Veneno 6×3</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note"><b>Balance:</b> más vida suele venir con menos crítico/evasión, y viceversa. El especial del Mago es el que más daño hace, pero es quien menos aguanta. Gana la estrategia, no la ficha.</div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="pager">
+    <a href="arquitectura.html"><small>&larr; Anterior</small>Arquitectura</a>
+    <a class="next" href="como-jugar.html"><small>Siguiente &rarr;</small>Cómo jugar</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap"><p>Hecho con Java · <a href="https://github.com/RenzoRamosDEV/Juego-X-Turnos" target="_blank" rel="noopener">RenzoRamosDEV/Juego-X-Turnos</a></p></div>
+</footer>
+
+</body>
+</html>

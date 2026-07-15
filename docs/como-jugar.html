@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cómo jugar · Juego x Turnos</title>
+<meta name="description" content="Modos de juego, acciones por turno, efectos de estado, objetos y consejos de estrategia.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand">⚔ Juego <span class="x">x</span> Turnos</span>
+    <span class="spacer"></span>
+    <div class="links">
+      <a class="link" href="index.html">Inicio</a>
+      <a class="link" href="tecnologias.html">Tecnologías</a>
+      <a class="link" href="arquitectura.html">Arquitectura</a>
+      <a class="link" href="personajes.html">Personajes</a>
+      <a class="link active" href="como-jugar.html">Cómo jugar</a>
+      <a class="link" href="ejecutar.html">Ejecutar</a>
+    </div>
+  </div>
+</nav>
+
+<div class="subhero">
+  <div class="wrap">
+    <div class="kicker">04 · Cómo jugar</div>
+    <h1>Cómo se juega</h1>
+    <p>Al arrancar eliges un <b>modo</b> y un <b>personaje</b>. Después, en tu turno, decides tu acción escribiendo un número y pulsando Enter. Antes de cada acción se muestra a ambos combatientes con su arte, su vida y su maná.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Modos de juego</h2>
+    <div class="grid cols-3">
+      <div class="card"><span class="tag">1 jugador</span><h3>Contra la CPU</h3><p>Eliges personaje y te enfrentas a un rival aleatorio controlado por la máquina, que se cura, se defiende y remata cuando puede.</p></div>
+      <div class="card"><span class="tag">2 jugadores</span><h3>Local</h3><p>Cada persona escribe su nombre y elige personaje. Os turnáis en el mismo teclado; la cabecera indica de quién es el turno.</p></div>
+      <div class="card"><span class="tag">Reto</span><h3>Torneo</h3><p>Con un solo personaje, vences en cadena al resto de luchadores. Entre ronda y ronda recuperas parte de la vida.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Tu turno: tres opciones</h2>
+    <ul class="clean">
+      <li><b>Atacar</b> — eliges uno de tus 3 ataques. El daño varía un poco cada vez y puede ser crítico.</li>
+      <li><b>Defender</b> — reduces a la mitad el daño que recibas hasta tu siguiente turno. Útil cuando prevés un especial.</li>
+      <li><b>Usar un objeto</b> — consumes un objeto del inventario en lugar de atacar.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Mecánicas</h2>
+    <div class="grid cols-2">
+      <div class="card"><h3>Maná</h3><p>Empiezas con 60 y regeneras 25 por turno (máximo 100). El especial cuesta 50, así que no puedes usarlo cada turno: hay que dosificarlo.</p></div>
+      <div class="card"><h3>Crítico</h3><p>Con cierta probabilidad (según el personaje) un golpe hace <b>×1.5</b> de daño. El Asesino es quien más críticos logra.</p></div>
+      <div class="card"><h3>Evasión</h3><p>El objetivo puede esquivar por completo un ataque según su evasión. El Asesino esquiva más; el Guerrero casi nunca.</p></div>
+      <div class="card"><h3>Escudo y defensa</h3><p>El <b>escudo</b> (objeto) absorbe daño antes que la vida. <b>Defender</b> reduce el daño del próximo golpe a la mitad.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Efectos de estado</h2>
+    <p class="lead">Los aplican los ataques especiales. Se procesan al inicio de cada turno del afectado.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Efecto</th><th>Qué hace</th><th>Lo aplica</th></tr></thead>
+        <tbody>
+          <tr><td><b>Veneno</b></td><td>6 de daño/turno durante 3 turnos</td><td>Asesino</td></tr>
+          <tr><td><b>Quemadura</b></td><td>7 de daño/turno durante 3 turnos</td><td>Mago</td></tr>
+          <tr><td><b>Sangrado</b></td><td>6 de daño/turno durante 2 turnos</td><td>Arquero</td></tr>
+          <tr><td><b>Aturdimiento</b></td><td>hace perder el siguiente turno</td><td>Guerrero</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Objetos</h2>
+    <p class="lead">Cada combatiente empieza con este inventario. Usar un objeto ocupa el turno.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Objeto</th><th>Cantidad</th><th>Efecto</th></tr></thead>
+        <tbody>
+          <tr><td><b>Poción de Vida</b></td><td>x2</td><td>Restaura 35 de vida</td></tr>
+          <tr><td><b>Escudo</b></td><td>x1</td><td>Absorbe los próximos 30 puntos de daño</td></tr>
+          <tr><td><b>Antídoto</b></td><td>x1</td><td>Elimina todos los efectos de estado activos</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Consejos</h2>
+    <ul class="clean">
+      <li><b>Guarda el especial</b> para rematar o para aplicar un efecto en el momento clave; no lo malgastes con el rival a full vida.</li>
+      <li><b>Con el Mago</b>, protégete pronto (defender/escudo): pega durísimo pero cae rápido.</li>
+      <li><b>El antídoto</b> vale oro contra la quemadura del Mago o el veneno del Asesino.</li>
+      <li><b>Defender</b> antes de un especial enemigo puede salvarte la partida.</li>
+      <li><b>Contra el Asesino</b>, cuenta con que esquivará y hará críticos: no confíes en un solo golpe.</li>
+    </ul>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="pager">
+    <a href="personajes.html"><small>&larr; Anterior</small>Personajes</a>
+    <a class="next" href="ejecutar.html"><small>Siguiente &rarr;</small>Ejecutar</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap"><p>Hecho con Java · <a href="https://github.com/RenzoRamosDEV/Juego-X-Turnos" target="_blank" rel="noopener">RenzoRamosDEV/Juego-X-Turnos</a></p></div>
+</footer>
+
+</body>
+</html>

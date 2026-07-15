@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ejecutar · Juego x Turnos</title>
+<meta name="description" content="Cómo compilar, jugar y ejecutar los tests del juego en tu máquina.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand">⚔ Juego <span class="x">x</span> Turnos</span>
+    <span class="spacer"></span>
+    <div class="links">
+      <a class="link" href="index.html">Inicio</a>
+      <a class="link" href="tecnologias.html">Tecnologías</a>
+      <a class="link" href="arquitectura.html">Arquitectura</a>
+      <a class="link" href="personajes.html">Personajes</a>
+      <a class="link" href="como-jugar.html">Cómo jugar</a>
+      <a class="link active" href="ejecutar.html">Ejecutar</a>
+    </div>
+  </div>
+</nav>
+
+<div class="subhero">
+  <div class="wrap">
+    <div class="kicker">05 · Ejecutar</div>
+    <h1>Cómo ejecutarlo</h1>
+    <p>No hace falta instalar nada más que el JDK: las librerías (Lombok y JUnit) ya vienen en la carpeta <code>lib/</code> del repositorio.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Requisitos</h2>
+    <ul class="clean">
+      <li><b>JDK 17</b> o superior (comprueba con <code>java -version</code>).</li>
+      <li>Una <b>terminal</b> que soporte colores ANSI (cualquier terminal moderna de Linux, macOS o Windows).</li>
+      <li><b>git</b> para clonar el repositorio (opcional: puedes descargar el ZIP).</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> 1. Clonar</h2>
+<pre class="code">git clone https://github.com/RenzoRamosDEV/Juego-X-Turnos.git
+cd Juego-X-Turnos</pre>
+
+    <h2 style="margin-top:32px"><span class="em">◆</span> 2. Compilar y jugar</h2>
+    <p class="lead">La forma más simple es el script incluido:</p>
+<pre class="code">./run.sh</pre>
+    <p class="lead" style="margin-top:16px">O paso a paso, si prefieres:</p>
+<pre class="code"><span class="c"># reunir las fuentes y compilar con Lombok</span>
+find src -name "*.java" &gt; sources.txt
+javac -cp lib/lombok.jar -d out @sources.txt &amp;&amp; rm sources.txt
+
+<span class="c"># lanzar el juego</span>
+java -cp out com.tuio.juegoxturnos.Main</pre>
+
+    <h2 style="margin-top:32px"><span class="em">◆</span> 3. Ejecutar los tests</h2>
+<pre class="code">./test.sh</pre>
+    <p class="muted" style="margin-top:12px">Compila el código y las pruebas y lanza los 60 tests con JUnit 5. Es lo mismo que corre la CI en cada push.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="em">◆</span> Los scripts</h2>
+    <div class="grid cols-2">
+      <div class="card"><h3><code>run.sh</code></h3><p>Compila las fuentes (con Lombok) y arranca el juego. Un solo comando para jugar.</p></div>
+      <div class="card"><h3><code>test.sh</code></h3><p>Compila código y tests y ejecuta la batería completa de JUnit 5, mostrando el árbol de resultados.</p></div>
+    </div>
+    <div class="note"><b>Importante:</b> el juego es interactivo (lee lo que escribes) y usa colores y limpieza de pantalla. Córrelo en tu <b>terminal</b>, no redirigido a un archivo ni por una tubería.</div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="pager">
+    <a href="como-jugar.html"><small>&larr; Anterior</small>Cómo jugar</a>
+    <a class="next" href="index.html"><small>Volver &rarr;</small>Inicio</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap"><p>Hecho con Java · <a href="https://github.com/RenzoRamosDEV/Juego-X-Turnos" target="_blank" rel="noopener">RenzoRamosDEV/Juego-X-Turnos</a></p></div>
+</footer>
+
+</body>
+</html>
