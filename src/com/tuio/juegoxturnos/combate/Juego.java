@@ -163,7 +163,11 @@ public final class Juego {
                     p.getAtaqueEspecial().getNombre()));
         }
         int opcion = consola.leerOpcion("Tu elección:", 1, CATALOGO.size());
-        return CATALOGO.get(opcion - 1).get();
+        Personaje elegido = CATALOGO.get(opcion - 1).get();
+        consola.linea();
+        consola.mostrarArte(elegido, Colores.CIAN);
+        consola.linea("Has elegido: " + Colores.pintar(elegido.getNombre(), Colores.CIAN));
+        return elegido;
     }
 
     /** La CPU recibe un personaje al azar del catálogo. */
