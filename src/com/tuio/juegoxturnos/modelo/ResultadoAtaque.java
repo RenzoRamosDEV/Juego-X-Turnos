@@ -12,8 +12,10 @@ import com.tuio.juegoxturnos.modelo.efectos.EfectoEstado;
  * @param danio          daño final infligido (ya incluye el bono por crítico)
  * @param critico        {@code true} si el golpe fue crítico
  * @param efectoAplicado efecto de estado infligido al objetivo, o {@code null}
+ * @param fallado        {@code true} si el objetivo esquivó el ataque
  */
-public record ResultadoAtaque(Ataque ataque, int danio, boolean critico, EfectoEstado efectoAplicado) {
+public record ResultadoAtaque(Ataque ataque, int danio, boolean critico,
+                              EfectoEstado efectoAplicado, boolean fallado) {
 
     /** @return {@code true} si el ataque aplicó un efecto de estado. */
     public boolean aplicoEfecto() {
