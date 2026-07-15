@@ -51,37 +51,41 @@ public final class ControladorHumano implements Controlador {
 
     private void mostrarMenu(String nombreActor, List<Ataque> ataques, Personaje actor, boolean hayObjetos,
                              int opcionDefender, int opcionObjetos) {
-        consola.linea();
-        consola.linea(Colores.pintar("Acciones de " + nombreActor + ":", Colores.NEGRITA));
+        consola.subtitulo("Acciones de " + nombreActor);
         for (int i = 0; i < ataques.size(); i++) {
             Ataque ataque = ataques.get(i);
-            String etiqueta = String.format("  %d) %-18s daño %2d-%2d",
-                    i + 1, ataque.getNombre(), ataque.getDanioMin(), ataque.getDanioMax());
+            String etiqueta = opcion(i + 1) + String.format(" %-18s ", ataque.getNombre())
+                    + Colores.pintar(String.format("daño %2d-%2d", ataque.getDanioMin(), ataque.getDanioMax()),
+                    Colores.GRIS);
             if (ataque.isEspecial()) {
-                etiqueta += Colores.pintar("  [ESPECIAL, maná " + ataque.getCostoMana() + "]", Colores.MAGENTA);
+                etiqueta += Colores.pintar("  ✦ ESPECIAL (maná " + ataque.getCostoMana() + ")", Colores.MAGENTA_CLARO);
             }
             if (!actor.puedeUsar(ataque)) {
                 etiqueta += Colores.pintar("  (sin maná)", Colores.ROJO);
             }
             consola.linea(etiqueta);
         }
-        consola.linea(String.format("  %d) %s", opcionDefender,
-                Colores.pintar("Defender (reduce el daño recibido)", Colores.AZUL)));
+        consola.linea(opcion(opcionDefender) + Colores.pintar(" Defender", Colores.AZUL_CLARO)
+                + Colores.pintar("  (reduce el daño recibido)", Colores.GRIS));
         if (hayObjetos) {
-            consola.linea(String.format("  %d) %s", opcionObjetos,
-                    Colores.pintar("Usar un objeto", Colores.CIAN)));
+            consola.linea(opcion(opcionObjetos) + Colores.pintar(" Usar un objeto", Colores.CIAN_CLARO));
         }
+    }
+
+    /** Formatea el número de una opción del menú, p. ej. "  [1]". */
+    private String opcion(int numero) {
+        return Colores.pintar(String.format("  [%d]", numero), Colores.CIAN_CLARO + Colores.NEGRITA);
     }
 
     /** Muestra los objetos y devuelve el elegido, o {@code null} si se cancela. */
     private Item pedirObjeto(Inventario inventario) {
         List<Item> objetos = inventario.disponibles();
-        consola.linea();
-        consola.linea(Colores.pintar("Objetos:", Colores.NEGRITA));
+        consola.subtitulo("Objetos");
         for (int i = 0; i < objetos.size(); i++) {
             Item objeto = objetos.get(i);
-            consola.linea(String.format("  %d) %-16s x%d  %s",
-                    i + 1, objeto.getNombre(), inventario.cantidad(objeto), objeto.getDescripcion()));
+            consola.linea(opcion(i + 1) + String.format(" %-16s ", objeto.getNombre())
+                    + Colores.pintar("x" + inventario.cantidad(objeto), Colores.AMARILLO_CLARO)
+                    + Colores.pintar("  " + objeto.getDescripcion(), Colores.GRIS));
         }
         int opcion = consola.leerOpcion("Elige un objeto (0 = volver):", 0, objetos.size());
         return opcion == 0 ? null : objetos.get(opcion - 1);
