@@ -89,8 +89,8 @@ public final class Juego {
         consola.linea();
         consola.linea("Tu rival será: " + Colores.pintar(cpu.getNombre(), Colores.ROJO));
 
-        Combatiente combatienteJugador = combatiente(jugador, controladorHumano, Colores.VERDE);
-        Combatiente combatienteCpu = combatiente(cpu, controladorCpu, Colores.ROJO);
+        Combatiente combatienteJugador = combatiente(jugador, controladorHumano, Colores.VERDE, jugador.getNombre());
+        Combatiente combatienteCpu = combatiente(cpu, controladorCpu, Colores.ROJO, cpu.getNombre());
 
         Combatiente ganador = new Combate(combatienteJugador, combatienteCpu, consola, aleatorio).iniciar();
         boolean gana = ganador == combatienteJugador;
@@ -99,17 +99,19 @@ public final class Juego {
                 gana ? Colores.VERDE : Colores.ROJO));
     }
 
-    /** Modo dos jugadores: ambos lados los controla una persona. */
+    /** Modo dos jugadores: ambos lados los controla una persona con su propio nombre. */
     private void jugarDosJugadores() {
-        Personaje jugador1 = elegirPersonaje("el personaje del Jugador 1");
-        Personaje jugador2 = elegirPersonaje("el personaje del Jugador 2");
+        String nombre1 = consola.leerTexto("Jugador 1, escribe tu nombre:");
+        Personaje jugador1 = elegirPersonaje("el personaje de " + nombre1);
+        String nombre2 = consola.leerTexto("Jugador 2, escribe tu nombre:");
+        Personaje jugador2 = elegirPersonaje("el personaje de " + nombre2);
 
-        Combatiente combatiente1 = combatiente(jugador1, controladorHumano, Colores.VERDE);
-        Combatiente combatiente2 = combatiente(jugador2, controladorHumano, Colores.ROJO);
+        Combatiente combatiente1 = combatiente(jugador1, controladorHumano, Colores.VERDE, nombre1);
+        Combatiente combatiente2 = combatiente(jugador2, controladorHumano, Colores.ROJO, nombre2);
 
         Combatiente ganador = new Combate(combatiente1, combatiente2, consola, aleatorio).iniciar();
         consola.linea(Colores.pintar(
-                "¡" + ganador.getPersonaje().getNombre() + " se lleva la victoria!", Colores.VERDE));
+                "¡" + ganador.getNombre() + " se lleva la victoria!", Colores.VERDE));
     }
 
     /** Modo torneo: el jugador se enfrenta en cadena al resto de personajes. */
@@ -124,8 +126,8 @@ public final class Juego {
             Personaje rival = rivales.get(ronda).get();
             consola.titulo("Ronda " + (ronda + 1) + " de " + rivales.size() + ": " + rival.getNombre());
 
-            Combatiente combatienteJugador = combatiente(jugador, controladorHumano, Colores.VERDE);
-            Combatiente combatienteRival = combatiente(rival, controladorCpu, Colores.ROJO);
+            Combatiente combatienteJugador = combatiente(jugador, controladorHumano, Colores.VERDE, jugador.getNombre());
+            Combatiente combatienteRival = combatiente(rival, controladorCpu, Colores.ROJO, rival.getNombre());
             Combatiente ganador = new Combate(combatienteJugador, combatienteRival, consola, aleatorio).iniciar();
 
             if (ganador != combatienteJugador) {
@@ -147,8 +149,8 @@ public final class Juego {
     }
 
     /** Crea un combatiente con inventario por defecto para el personaje dado. */
-    private Combatiente combatiente(Personaje personaje, Controlador controlador, String color) {
-        return new Combatiente(personaje, Inventario.porDefecto(), controlador, color);
+    private Combatiente combatiente(Personaje personaje, Controlador controlador, String color, String nombre) {
+        return new Combatiente(personaje, Inventario.porDefecto(), controlador, color, nombre);
     }
 
     /** Muestra el catálogo y devuelve una instancia nueva del personaje elegido. */
