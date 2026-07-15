@@ -35,6 +35,9 @@ En tu turno puedes:
 - **Defender:** reduces a la mitad el daño que recibas hasta tu siguiente turno.
 - **Usar un objeto** del inventario.
 
+Antes de cada acción se muestra el **arte ASCII** de ambos combatientes con su
+barra de vida y maná justo debajo, para ver de un vistazo cómo va el duelo.
+
 ### Efectos de estado
 
 El ataque especial aplica un efecto que se procesa al inicio de cada turno del
@@ -114,6 +117,7 @@ src/com/tuio/juegoxturnos/
 │   └── items/                # Item, PocionVida, Escudo, Antidoto, Inventario
 ├── ui/
 │   ├── Consola.java          # Menús, barras de vida/maná, narración
+│   ├── ArteAscii.java        # Arte ASCII de cada personaje
 │   └── Colores.java          # Códigos ANSI de color
 └── util/
     └── Aleatorio.java        # Aleatoriedad centralizada (semilla fijable)
