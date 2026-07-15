@@ -61,16 +61,29 @@ public final class Consola {
     }
 
     /**
-     * Muestra el estado de ambos combatientes con barras de vida y maná.
+     * Muestra el estado de ambos combatientes: el arte ASCII de cada uno con su
+     * barra de vida y maná justo debajo.
      *
-     * @param jugador personaje del jugador
-     * @param cpu     personaje de la CPU
+     * @param uno       primer combatiente
+     * @param colorUno  color con el que se pinta su arte
+     * @param dos       segundo combatiente
+     * @param colorDos  color con el que se pinta su arte
      */
-    public void mostrarEstado(Personaje jugador, Personaje cpu) {
+    public void mostrarEstado(Personaje uno, String colorUno, Personaje dos, String colorDos) {
         separador();
-        linea(estadoPersonaje(jugador));
-        linea(estadoPersonaje(cpu));
+        mostrarArte(uno, colorUno);
+        linea(estadoPersonaje(uno));
+        linea();
+        mostrarArte(dos, colorDos);
+        linea(estadoPersonaje(dos));
         separador();
+    }
+
+    /** Pinta el arte ASCII de un personaje con el color indicado. */
+    public void mostrarArte(Personaje personaje, String color) {
+        for (String fila : ArteAscii.lineas(personaje.getNombre())) {
+            linea(Colores.pintar(fila, color));
+        }
     }
 
     private String estadoPersonaje(Personaje personaje) {
