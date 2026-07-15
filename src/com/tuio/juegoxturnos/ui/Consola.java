@@ -84,6 +84,9 @@ public final class Consola {
         if (personaje.getEscudo() > 0) {
             linea.append(Colores.pintar("   ESC " + personaje.getEscudo(), Colores.CIAN));
         }
+        if (personaje.isDefendiendo()) {
+            linea.append(Colores.pintar("   DEF", Colores.AZUL));
+        }
         if (personaje.tieneEfectos()) {
             linea.append(Colores.pintar("   {" + String.join(", ", personaje.nombresEfectosActivos()) + "}",
                     Colores.MAGENTA));
@@ -122,7 +125,10 @@ public final class Consola {
     public int leerOpcion(String prompt, int min, int max) {
         while (true) {
             salida.print(prompt + " ");
-            String texto = entrada.hasNextLine() ? entrada.nextLine().trim() : "";
+            if (!entrada.hasNextLine()) {
+                throw new IllegalStateException("Se agotó la entrada mientras se esperaba una opción");
+            }
+            String texto = entrada.nextLine().trim();
             try {
                 int valor = Integer.parseInt(texto);
                 if (valor >= min && valor <= max) {
