@@ -20,9 +20,10 @@ public final class Guerrero extends Personaje {
     private static final int MANA_INICIAL = 60;
     private static final int REGENERACION_MANA = 25;
     private static final double PROB_CRITICO = 0.10;
+    private static final double PROB_EVASION = 0.05;
 
     public Guerrero() {
-        super("Guerrero", VIDA, MANA_MAXIMO, MANA_INICIAL, REGENERACION_MANA, PROB_CRITICO,
+        super("Guerrero", VIDA, MANA_MAXIMO, MANA_INICIAL, REGENERACION_MANA, PROB_CRITICO, PROB_EVASION,
                 List.of(
                         new Ataque("Espadazo", 20, 25, 0, false),
                         new Ataque("Golpe Giratorio", 16, 22, 0, false),
