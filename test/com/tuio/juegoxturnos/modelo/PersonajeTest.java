@@ -1,5 +1,7 @@
 package com.tuio.juegoxturnos.modelo;
 
+import com.tuio.juegoxturnos.modelo.efectos.EfectoAplicado;
+import com.tuio.juegoxturnos.modelo.efectos.Efectos;
 import com.tuio.juegoxturnos.util.Aleatorio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,8 @@ class PersonajeTest {
 
     private static final Ataque BASICO = new Ataque("Golpe", 10, 10, 0, false);
     private static final Ataque ESPECIAL = new Ataque("Especial", 10, 10, 50, true);
+    private static final Ataque ATAQUE_CON_VENENO =
+            new Ataque("Envenenar", 10, 10, 0, false, Efectos::veneno, 1.0);
 
     private Personaje nuevoPersonaje(int vida, int manaInicial, double probCritico) {
         return new PersonajeDePrueba("Prueba", vida, 100, manaInicial, 25, probCritico,
@@ -98,5 +102,44 @@ class PersonajeTest {
     void ataquesInmutables() {
         Personaje p = nuevoPersonaje(100, 60, 0.0);
         assertThrows(UnsupportedOperationException.class, () -> p.getAtaques().add(BASICO));
+    }
+
+    @Test
+    @DisplayName("un ataque con efecto lo aplica al objetivo")
+    void ataqueAplicaEfecto() {
+        Personaje atacante = nuevoPersonaje(100, 60, 0.0);
+        Personaje objetivo = nuevoPersonaje(100, 60, 0.0);
+
+        ResultadoAtaque resultado = atacante.atacar(ATAQUE_CON_VENENO, objetivo, new Aleatorio(1));
+
+        assertTrue(resultado.aplicoEfecto());
+        assertTrue(objetivo.tieneEfectos());
+        assertEquals(List.of("Veneno"), objetivo.nombresEfectosActivos());
+    }
+
+    @Test
+    @DisplayName("procesarInicioTurno aplica el daño del efecto y lo expira a su tiempo")
+    void procesaEfectosPorTurno() {
+        Personaje p = nuevoPersonaje(100, 60, 0.0);
+        p.aplicarEfecto(Efectos.veneno()); // 6 de daño durante 3 turnos
+
+        for (int turno = 1; turno <= 3; turno++) {
+            List<EfectoAplicado> aplicados = p.procesarInicioTurno();
+            assertEquals(1, aplicados.size());
+            assertEquals(6, aplicados.get(0).danio());
+        }
+        assertEquals(100 - 18, p.getVida());
+        assertFalse(p.tieneEfectos(), "el veneno debe haber expirado tras 3 turnos");
+    }
+
+    @Test
+    @DisplayName("el aturdimiento se reporta como impedimento de actuar")
+    void procesaAturdimiento() {
+        Personaje p = nuevoPersonaje(100, 60, 0.0);
+        p.aplicarEfecto(Efectos.aturdimiento());
+
+        List<EfectoAplicado> aplicados = p.procesarInicioTurno();
+        assertTrue(aplicados.get(0).aturde());
+        assertFalse(p.tieneEfectos(), "el aturdimiento de 1 turno debe expirar tras procesarse");
     }
 }
