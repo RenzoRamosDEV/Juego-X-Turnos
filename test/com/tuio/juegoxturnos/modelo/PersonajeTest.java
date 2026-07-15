@@ -142,4 +142,49 @@ class PersonajeTest {
         assertTrue(aplicados.get(0).aturde());
         assertFalse(p.tieneEfectos(), "el aturdimiento de 1 turno debe expirar tras procesarse");
     }
+
+    @Test
+    @DisplayName("un objetivo con evasión total esquiva el ataque sin recibir daño")
+    void objetivoEsquiva() {
+        Personaje atacante = nuevoPersonaje(100, 60, 0.0);
+        Personaje objetivo = new PersonajeDePrueba("Evasivo", 100, 100, 60, 25, 0.0, 1.0, List.of(BASICO));
+
+        ResultadoAtaque resultado = atacante.atacar(BASICO, objetivo, new Aleatorio(1));
+
+        assertTrue(resultado.fallado());
+        assertEquals(0, resultado.danio());
+        assertEquals(100, objetivo.getVida());
+    }
+
+    @Test
+    @DisplayName("defender reduce a la mitad el daño recibido hasta el siguiente turno")
+    void defenderReduceDanio() {
+        Personaje p = nuevoPersonaje(100, 60, 0.0);
+        p.defender();
+        p.recibirDanio(20); // 20 * 0.5 = 10
+        assertEquals(90, p.getVida());
+
+        p.finalizarDefensa();
+        p.recibirDanio(20); // sin defensa, daño completo
+        assertEquals(70, p.getVida());
+    }
+
+    @Test
+    @DisplayName("reiniciarParaRonda cura, restaura el maná y limpia estados")
+    void reinicioDeRonda() {
+        Personaje p = nuevoPersonaje(100, 60, 0.0);
+        p.recibirDanio(70);          // vida 30
+        p.atacar(ESPECIAL, nuevoPersonaje(100, 60, 0.0), new Aleatorio(1)); // maná 60 -> 10
+        p.aplicarEfecto(Efectos.veneno());
+        p.anadirEscudo(20);
+        p.defender();
+
+        p.reiniciarParaRonda(40);
+
+        assertEquals(70, p.getVida());          // 30 + 40
+        assertEquals(60, p.getMana());           // maná inicial restaurado
+        assertEquals(0, p.getEscudo());
+        assertFalse(p.isDefendiendo());
+        assertFalse(p.tieneEfectos());
+    }
 }
