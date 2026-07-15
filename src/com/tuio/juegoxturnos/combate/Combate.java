@@ -35,32 +35,33 @@ public final class Combate {
      * @return el combatiente ganador
      */
     public Combatiente iniciar() {
-        consola.titulo(a.getPersonaje().getNombre() + "  vs  " + b.getPersonaje().getNombre());
-        int numeroTurno = 1;
+        consola.titulo(a.getNombre() + "  vs  " + b.getNombre());
 
         while (a.getPersonaje().estaVivo() && b.getPersonaje().estaVivo()) {
-            consola.linea();
-            consola.linea(Colores.pintar("· Turno " + numeroTurno + " ·", Colores.GRIS));
-            consola.mostrarEstado(a.getPersonaje(), a.getColor(), b.getPersonaje(), b.getColor());
-
             jugarTurno(a, b);
             if (!a.getPersonaje().estaVivo() || !b.getPersonaje().estaVivo()) {
                 break;
             }
-
             jugarTurno(b, a);
-            numeroTurno++;
         }
 
         return anunciarGanador();
     }
 
-    /** Turno de un combatiente: levanta la defensa previa, procesa efectos y actúa. */
+    /**
+     * Turno de un combatiente: muestra el estado de ambos, levanta la defensa
+     * previa, procesa los efectos y, si puede, ejecuta su acción.
+     */
     private void jugarTurno(Combatiente actor, Combatiente objetivo) {
         Personaje personaje = actor.getPersonaje();
         personaje.finalizarDefensa();
 
-        if (procesarEfectos(personaje)) {
+        consola.linea();
+        consola.linea(Colores.pintar("Turno de " + actor.getNombre(), actor.getColor() + Colores.NEGRITA));
+        consola.mostrarEstado(a.getNombre(), a.getPersonaje(), a.getColor(),
+                b.getNombre(), b.getPersonaje(), b.getColor());
+
+        if (procesarEfectos(actor)) {
             AccionTurno accion = actor.decidirAccion(objetivo.getPersonaje());
             ejecutar(actor, objetivo, accion);
         }
@@ -72,10 +73,11 @@ public final class Combate {
     /**
      * Procesa los efectos de estado al inicio del turno.
      *
-     * @return {@code true} si el personaje puede actuar; {@code false} si murió o quedó aturdido
+     * @return {@code true} si el combatiente puede actuar; {@code false} si murió o quedó aturdido
      */
-    private boolean procesarEfectos(Personaje actor) {
-        List<EfectoAplicado> aplicados = actor.procesarInicioTurno();
+    private boolean procesarEfectos(Combatiente actor) {
+        Personaje personaje = actor.getPersonaje();
+        List<EfectoAplicado> aplicados = personaje.procesarInicioTurno();
         boolean aturdido = false;
         for (EfectoAplicado efecto : aplicados) {
             if (efecto.danio() > 0) {
@@ -87,7 +89,7 @@ public final class Combate {
                 aturdido = true;
             }
         }
-        if (!actor.estaVivo()) {
+        if (!personaje.estaVivo()) {
             consola.narrar(Colores.pintar(actor.getNombre() + " cae por sus efectos de estado.", Colores.ROJO));
             return false;
         }
@@ -110,23 +112,20 @@ public final class Combate {
         } else if (accion instanceof AccionTurno.Defender) {
             personaje.defender();
             consola.narrar(Colores.pintar(
-                    personaje.getNombre() + " se pone en guardia y reducirá el daño del próximo golpe.", Colores.AZUL));
+                    actor.getNombre() + " se pone en guardia y reducirá el daño del próximo golpe.", Colores.AZUL));
         }
     }
 
     /** Narra el resultado de un ataque, resaltando esquivas, críticos, especiales y efectos. */
     private void narrarAtaque(Combatiente actor, Combatiente objetivo, ResultadoAtaque resultado) {
-        Personaje atacante = actor.getPersonaje();
-        Personaje defensor = objetivo.getPersonaje();
-
         if (resultado.fallado()) {
             consola.narrar(Colores.pintar(
-                    defensor.getNombre() + " esquiva el ataque de " + atacante.getNombre() + ".", Colores.AMARILLO));
+                    objetivo.getNombre() + " esquiva el ataque de " + actor.getNombre() + ".", Colores.AMARILLO));
             return;
         }
 
         StringBuilder mensaje = new StringBuilder();
-        mensaje.append(Colores.pintar(atacante.getNombre(), actor.getColor()))
+        mensaje.append(Colores.pintar(actor.getNombre(), actor.getColor()))
                 .append(" usa ")
                 .append(Colores.pintar(resultado.ataque().getNombre(),
                         resultado.ataque().isEspecial() ? Colores.MAGENTA : Colores.CIAN));
@@ -138,14 +137,14 @@ public final class Combate {
         mensaje.append(" e inflige ")
                 .append(Colores.pintar(resultado.danio() + " de daño", Colores.NEGRITA))
                 .append(" a ")
-                .append(defensor.getNombre())
+                .append(objetivo.getNombre())
                 .append(".");
 
         consola.narrar(mensaje.toString());
 
         if (resultado.aplicoEfecto()) {
             consola.narrar(Colores.pintar(
-                    "  " + defensor.getNombre() + " queda afectado por "
+                    "  " + objetivo.getNombre() + " queda afectado por "
                             + resultado.efectoAplicado().getNombre() + ".", Colores.MAGENTA));
         }
     }
@@ -153,8 +152,9 @@ public final class Combate {
     /** Muestra el estado final y devuelve al ganador. */
     private Combatiente anunciarGanador() {
         Combatiente ganador = a.getPersonaje().estaVivo() ? a : b;
-        consola.mostrarEstado(a.getPersonaje(), a.getColor(), b.getPersonaje(), b.getColor());
-        consola.titulo("¡" + ganador.getPersonaje().getNombre() + " gana el combate!");
+        consola.mostrarEstado(a.getNombre(), a.getPersonaje(), a.getColor(),
+                b.getNombre(), b.getPersonaje(), b.getColor());
+        consola.titulo("¡" + ganador.getNombre() + " gana el combate!");
         return ganador;
     }
 }
