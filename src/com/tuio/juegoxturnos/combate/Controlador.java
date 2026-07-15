@@ -13,10 +13,11 @@ public interface Controlador {
     /**
      * Decide la acción del turno.
      *
-     * @param actor      personaje que actúa
-     * @param rival      personaje contrario
-     * @param inventario objetos disponibles del actor
+     * @param nombreActor nombre visible del actor (para los menús)
+     * @param actor       personaje que actúa
+     * @param rival       personaje contrario
+     * @param inventario  objetos disponibles del actor
      * @return la acción elegida
      */
-    AccionTurno decidir(Personaje actor, Personaje rival, Inventario inventario);
+    AccionTurno decidir(String nombreActor, Personaje actor, Personaje rival, Inventario inventario);
 }
